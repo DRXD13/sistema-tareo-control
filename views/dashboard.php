@@ -6,7 +6,6 @@
     <title>Dashboard - Sistema de Tareo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Estilos rápidos para el menú lateral */
         .sidebar { height: 100vh; background-color: #212529; }
         .sidebar a { color: #cfd8dc; text-decoration: none; display: block; padding: 15px 20px; transition: 0.3s; }
         .sidebar a:hover { background-color: #343a40; color: #fff; border-left: 4px solid #0d6efd; }
@@ -15,15 +14,17 @@
 <body>
     
     <div class="d-flex">
-        <div class="sidebar" style="width: 260px;">
+        <div class="sidebar" style="width: 260px; min-height: 100vh;">
             <h4 class="text-white text-center py-4 border-bottom border-secondary m-0">
                 ⚙️ Tareo Web
             </h4>
             <div class="mt-3">
-                <a href="index.php">🏠 Inicio</a>
-                <a href="#">👥 Gestión de Personal</a>
+                <a href="index.php?vista=inicio">🏠 Inicio</a>
+                <a href="index.php?vista=areas">🏢 Gestión de Áreas</a>
+                <a href="index.php?vista=cargos">💼 Gestión de Cargos</a>
+                <a href="index.php?vista=cuadrillas">🚜 Gestión de Cuadrillas</a>
+                <a href="#">👥 Trabajadores</a>
                 <a href="#">📋 Registro de Tareo</a>
-                <a href="#">🛠️ Actividades Diarias</a>
                 <a href="#">💰 Control de Jornales</a>
                 <a href="#">📊 Reportes</a>
             </div>
@@ -42,12 +43,29 @@
             </div>
 
             <div class="container-fluid px-4">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-5 text-center">
-                        <h2 class="text-primary mb-3">¡Sistema de Tareo Iniciado!</h2>
-                        <p class="lead text-muted">Selecciona una opción del menú lateral para comenzar a operar.</p>
+                <?php 
+                // Detectamos qué vista quiere ver el usuario
+                $vista = isset($_GET['vista']) ? $_GET['vista'] : 'inicio';
+
+               // Mostramos la vista correspondiente
+if ($vista == 'areas') {
+    require_once "views/areas.php";
+} elseif ($vista == 'cargos') {
+    require_once "views/cargos.php";
+} elseif ($vista == 'cuadrillas') {
+    require_once "views/cuadrillas.php";
+} else {
+                    // Pantalla por defecto
+                ?>
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-5 text-center">
+                            <h2 class="text-primary mb-3">¡Sistema de Tareo Iniciado!</h2>
+                            <p class="lead text-muted">Selecciona una opción del menú lateral para comenzar a operar.</p>
+                        </div>
                     </div>
-                </div>
+                <?php 
+                } 
+                ?>
             </div>
         </div>
     </div>

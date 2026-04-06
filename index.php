@@ -2,10 +2,43 @@
 // 1. Arrancamos la sesión de PHP (obligatorio para logueos)
 session_start();
 
-// 2. Si el usuario ya está logueado, le mostramos el Dashboard
+// 2. Si el usuario ya está logueado, verificamos qué acción quiere hacer
 if (isset($_SESSION['usuario_id'])) {
+    
+// Si hay una acción por ejecutar
+    if (isset($_GET['accion'])) {
+        
+        // --- ÁREAS ---
+        if (strpos($_GET['accion'], '_area') !== false) {
+            require_once "controllers/AreaController.php";
+            $controlador = new AreaController();
+            if ($_GET['accion'] == 'guardar_area') $controlador->guardarArea();
+            if ($_GET['accion'] == 'actualizar_area') $controlador->actualizarArea();
+            if ($_GET['accion'] == 'cambiar_estado_area') $controlador->cambiarEstado();
+        }
+        
+        // --- CARGOS ---
+        if (strpos($_GET['accion'], '_cargo') !== false) {
+            require_once "controllers/CargoController.php";
+            $controlador = new CargoController();
+            if ($_GET['accion'] == 'guardar_cargo') $controlador->guardarCargo();
+            if ($_GET['accion'] == 'actualizar_cargo') $controlador->actualizarCargo();
+            if ($_GET['accion'] == 'cambiar_estado_cargo') $controlador->cambiarEstado();
+        }
+
+        // --- CUADRILLAS ---
+        if (strpos($_GET['accion'], '_cuadrilla') !== false) {
+            require_once "controllers/CuadrillaController.php";
+            $controlador = new CuadrillaController();
+            if ($_GET['accion'] == 'guardar_cuadrilla') $controlador->guardarCuadrilla();
+            if ($_GET['accion'] == 'actualizar_cuadrilla') $controlador->actualizarCuadrilla();
+            if ($_GET['accion'] == 'cambiar_estado_cuadrilla') $controlador->cambiarEstado();
+        }
+    }
+
+    // Finalmente, mostramos el Dashboard
     require_once "views/dashboard.php";
-    exit(); // Muy importante para que se detenga aquí y no cargue el Login
+    exit(); 
 }
 
 // 3. Verificamos si el formulario de login fue enviado por POST
