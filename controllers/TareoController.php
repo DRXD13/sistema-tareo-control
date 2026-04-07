@@ -1,17 +1,15 @@
 <?php
-// Llamamos al modelo
 require_once "models/Tareo.php";
 
 class TareoController {
     
     public function guardarTareo() {
-        // Verificamos que se haya enviado la fecha y la lista de trabajadores
         if (isset($_POST['fecha_tareo']) && isset($_POST['id_trabajador'])) {
             
             $fecha = $_POST['fecha_tareo'];
             
-            // Recibimos los arreglos (arrays) con los datos de todos los trabajadores
             $trabajadores = $_POST['id_trabajador']; 
+            $actividades = $_POST['id_actividad']; // Atrapamos las actividades
             $estados = $_POST['estado_asistencia']; 
             $horas = $_POST['horas_trabajadas']; 
             $observaciones = $_POST['observaciones']; 
@@ -19,23 +17,20 @@ class TareoController {
             $tareoModel = new Tareo();
             $exito = true;
 
-            // Recorremos la lista completa usando un bucle
             for ($i = 0; $i < count($trabajadores); $i++) {
                 $id_trabajador = $trabajadores[$i];
+                $id_actividad = $actividades[$i]; // Pasamos la actividad
                 $estado = $estados[$i];
                 $hora = $horas[$i];
                 $obs = $observaciones[$i];
 
-                // Guardamos la asistencia de este trabajador específico
-                $resultado = $tareoModel->registrarAsistencia($fecha, $id_trabajador, $estado, $hora, $obs);
+                $resultado = $tareoModel->registrarAsistencia($fecha, $id_trabajador, $id_actividad, $estado, $hora, $obs);
                 
-                // Si ocurre un error al guardar uno, lo registramos, pero el bucle sigue
                 if (!$resultado) {
                     $exito = false; 
                 }
             }
 
-            // Redireccionamos según el resultado final
             if ($exito) {
                 header("Location: index.php?vista=tareo&fecha=" . $fecha . "&mensaje=exito");
             } else {

@@ -25,7 +25,8 @@
                 <a href="index.php?vista=cuadrillas">🚜 Gestión de Cuadrillas</a>
                 <a href="index.php?vista=trabajadores">👥 Gestión de Personal</a>
                 <a href="index.php?vista=tareo">📋 Registro de Tareo</a>
-                <a href="#">💰 Control de Jornales</a>
+                <a href="index.php?vista=actividades">🛠️ Actividades Diarias</a>
+                <a href="index.php?vista=jornales">💰 Control de Jornales</a>
                 <a href="#">📊 Reportes</a>
             </div>
             
@@ -58,6 +59,10 @@ if ($vista == 'areas') {
     require_once "views/trabajadores.php";
 } elseif ($vista == 'tareo') {
     require_once "views/tareo.php";
+} elseif ($vista == 'actividades') {
+    require_once "views/actividades.php";
+} elseif ($vista == 'jornales') {
+    require_once "views/jornales.php";
 } else {
                     // Pantalla por defecto
                 ?>

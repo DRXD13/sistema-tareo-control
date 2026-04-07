@@ -50,6 +50,15 @@ if (isset($_SESSION['usuario_id'])) {
             $controlador = new TareoController();
             if ($_GET['accion'] == 'guardar_tareo') $controlador->guardarTareo();
         }
+
+        // --- ACTIVIDADES ---
+        if (strpos($_GET['accion'], '_actividad') !== false) {
+            require_once "controllers/ActividadController.php";
+            $controlador = new ActividadController();
+            if ($_GET['accion'] == 'guardar_actividad') $controlador->guardarActividad();
+            if ($_GET['accion'] == 'actualizar_actividad') $controlador->actualizarActividad();
+            if ($_GET['accion'] == 'cambiar_estado_actividad') $controlador->cambiarEstado();
+        }
     }
 
     // Finalmente, mostramos el Dashboard
