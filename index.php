@@ -34,6 +34,22 @@ if (isset($_SESSION['usuario_id'])) {
             if ($_GET['accion'] == 'actualizar_cuadrilla') $controlador->actualizarCuadrilla();
             if ($_GET['accion'] == 'cambiar_estado_cuadrilla') $controlador->cambiarEstado();
         }
+
+        // --- TRABAJADORES ---
+        if (strpos($_GET['accion'], '_trabajador') !== false) {
+            require_once "controllers/TrabajadorController.php";
+            $controlador = new TrabajadorController();
+            if ($_GET['accion'] == 'guardar_trabajador') $controlador->guardarTrabajador();
+            if ($_GET['accion'] == 'actualizar_trabajador') $controlador->actualizarTrabajador();
+            if ($_GET['accion'] == 'cambiar_estado_trabajador') $controlador->cambiarEstado();
+        }
+
+        // --- TAREO ---
+        if (strpos($_GET['accion'], '_tareo') !== false) {
+            require_once "controllers/TareoController.php";
+            $controlador = new TareoController();
+            if ($_GET['accion'] == 'guardar_tareo') $controlador->guardarTareo();
+        }
     }
 
     // Finalmente, mostramos el Dashboard
