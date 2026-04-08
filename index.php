@@ -78,6 +78,13 @@ if (isset($_SESSION['usuario_id'])) {
             $controlador = new AsistenciaController();
             $controlador->guardarSalida();
         }
+
+        // --- ACTIVIDADES DIARIAS ---
+        if ($_GET['accion'] == 'guardar_actividad_diaria') {
+            require_once "controllers/ActividadDiariaController.php";
+            $controlador = new ActividadDiariaController();
+            $controlador->guardarActividad();
+        }
     }
 
     // Finalmente, mostramos el Dashboard
