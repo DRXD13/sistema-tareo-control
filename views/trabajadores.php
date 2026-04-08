@@ -51,7 +51,6 @@ if (isset($_GET['editar'])) {
                 </div>
                 <div class="card-body">
                     <form action="index.php?accion=<?php echo $trabajadorEditar ? 'actualizar_trabajador' : 'guardar_trabajador'; ?>" method="POST">
-                        
                         <?php if($trabajadorEditar): ?>
                             <input type="hidden" name="id_trabajador" value="<?php echo $trabajadorEditar['id_trabajador']; ?>">
                         <?php endif; ?>
@@ -86,7 +85,7 @@ if (isset($_GET['editar'])) {
                             <select class="form-select form-select-sm" name="id_area" required>
                                 <option value="">Seleccione...</option>
                                 <?php foreach($listaAreas as $area): ?>
-                                    <?php if($area['estado'] == 1): // Solo mostramos áreas activas ?>
+                                    <?php if($area['estado'] == 1): ?>
                                         <option value="<?php echo $area['id_area']; ?>" <?php echo ($trabajadorEditar && $trabajadorEditar['id_area'] == $area['id_area']) ? 'selected' : ''; ?>>
                                             <?php echo $area['nombre_area']; ?>
                                         </option>
@@ -107,6 +106,11 @@ if (isset($_GET['editar'])) {
                                     <?php endif; ?>
                                 <?php endforeach; ?>
                             </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-primary small fw-bold">Jornal Diario (S/)</label>
+                            <input type="number" step="0.10" class="form-control form-control-sm border-primary" name="jornal_diario" value="<?php echo $trabajadorEditar ? $trabajadorEditar['jornal_diario'] : '50.00'; ?>" required>
                         </div>
 
                         <div class="row">
@@ -149,7 +153,7 @@ if (isset($_GET['editar'])) {
                                 <th>Doc.</th>
                                 <th>Nombres y Apellidos</th>
                                 <th>Área / Cargo</th>
-                                <th>Cuadrilla</th>
+                                <th class="text-success">Jornal (S/)</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
@@ -164,9 +168,7 @@ if (isset($_GET['editar'])) {
                                             <span class="badge bg-info text-dark"><?php echo $t['nombre_area']; ?></span><br>
                                             <small class="text-muted"><?php echo $t['nombre_cargo']; ?></small>
                                         </td>
-                                        <td>
-                                            <?php echo $t['nombre_cuadrilla'] ? '<span class="badge bg-secondary">'.$t['nombre_cuadrilla'].'</span>' : '-'; ?>
-                                        </td>
+                                        <td class="fw-bold text-success">S/ <?php echo number_format($t['jornal_diario'], 2); ?></td>
                                         <td>
                                             <?php if ($t['estado'] == 1): ?>
                                                 <span class="badge bg-success">Activo</span>

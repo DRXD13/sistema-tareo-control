@@ -59,6 +59,25 @@ if (isset($_SESSION['usuario_id'])) {
             if ($_GET['accion'] == 'actualizar_actividad') $controlador->actualizarActividad();
             if ($_GET['accion'] == 'cambiar_estado_actividad') $controlador->cambiarEstado();
         }
+
+        // --- JORNALES (PLANILLAS) ---
+        if ($_GET['accion'] == 'guardar_planilla') {
+            require_once "controllers/JornalController.php";
+            $controlador = new JornalController();
+            $controlador->guardarPlanillaMasiva();
+        }
+
+        // --- ASISTENCIAS ---
+        if ($_GET['accion'] == 'guardar_ingreso') {
+            require_once "controllers/AsistenciaController.php";
+            $controlador = new AsistenciaController();
+            $controlador->guardarIngreso();
+        }
+        if ($_GET['accion'] == 'guardar_salida') {
+            require_once "controllers/AsistenciaController.php";
+            $controlador = new AsistenciaController();
+            $controlador->guardarSalida();
+        }
     }
 
     // Finalmente, mostramos el Dashboard

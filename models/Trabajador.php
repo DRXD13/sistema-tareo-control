@@ -10,9 +10,7 @@ class Trabajador {
         $this->db = $this->conexion->getConexion();
     }
 
-    // Listar todos los trabajadores uniendo sus datos con las tablas de áreas, cargos y cuadrillas
     public function listarTrabajadores() {
-        // Usamos JOIN para traer los nombres reales y no solo los números de ID
         $sql = "SELECT t.*, a.nombre_area, c.nombre_cargo, cu.nombre_cuadrilla 
                 FROM trabajadores t
                 INNER JOIN areas a ON t.id_area = a.id_area
@@ -24,14 +22,13 @@ class Trabajador {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Registrar un nuevo trabajador
-    public function registrarTrabajador($id_area, $id_cargo, $id_cuadrilla, $tipo_documento, $numero_documento, $nombres, $apellidos, $fecha_ingreso) {
+    // Agregamos $jornal_diario aquí
+    public function registrarTrabajador($id_area, $id_cargo, $id_cuadrilla, $tipo_documento, $numero_documento, $nombres, $apellidos, $jornal_diario, $fecha_ingreso) {
         try {
-            // Si no seleccionan cuadrilla, la mandamos como NULL (vacía) a la base de datos
             $id_cuadrilla = empty($id_cuadrilla) ? null : $id_cuadrilla;
 
-            $sql = "INSERT INTO trabajadores (id_area, id_cargo, id_cuadrilla, tipo_documento, numero_documento, nombres, apellidos, fecha_ingreso) 
-                    VALUES (:id_area, :id_cargo, :id_cuadrilla, :tipo_documento, :numero_documento, :nombres, :apellidos, :fecha_ingreso)";
+            $sql = "INSERT INTO trabajadores (id_area, id_cargo, id_cuadrilla, tipo_documento, numero_documento, nombres, apellidos, jornal_diario, fecha_ingreso) 
+                    VALUES (:id_area, :id_cargo, :id_cuadrilla, :tipo_documento, :numero_documento, :nombres, :apellidos, :jornal_diario, :fecha_ingreso)";
             
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id_area', $id_area);
@@ -41,6 +38,7 @@ class Trabajador {
             $stmt->bindParam(':numero_documento', $numero_documento);
             $stmt->bindParam(':nombres', $nombres);
             $stmt->bindParam(':apellidos', $apellidos);
+            $stmt->bindParam(':jornal_diario', $jornal_diario);
             $stmt->bindParam(':fecha_ingreso', $fecha_ingreso);
             return $stmt->execute();
         } catch (Exception $e) {
@@ -48,7 +46,6 @@ class Trabajador {
         }
     }
 
-    // Obtener datos de un solo trabajador (para editar)
     public function obtenerTrabajador($id_trabajador) {
         $sql = "SELECT * FROM trabajadores WHERE id_trabajador = :id_trabajador";
         $stmt = $this->db->prepare($sql);
@@ -57,8 +54,8 @@ class Trabajador {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Actualizar datos de un trabajador
-    public function actualizarTrabajador($id_trabajador, $id_area, $id_cargo, $id_cuadrilla, $tipo_documento, $numero_documento, $nombres, $apellidos, $fecha_ingreso) {
+    // Agregamos $jornal_diario aquí
+    public function actualizarTrabajador($id_trabajador, $id_area, $id_cargo, $id_cuadrilla, $tipo_documento, $numero_documento, $nombres, $apellidos, $jornal_diario, $fecha_ingreso) {
         try {
             $id_cuadrilla = empty($id_cuadrilla) ? null : $id_cuadrilla;
             
@@ -70,6 +67,7 @@ class Trabajador {
                     numero_documento = :numero_documento, 
                     nombres = :nombres, 
                     apellidos = :apellidos, 
+                    jornal_diario = :jornal_diario,
                     fecha_ingreso = :fecha_ingreso 
                     WHERE id_trabajador = :id_trabajador";
             
@@ -81,6 +79,7 @@ class Trabajador {
             $stmt->bindParam(':numero_documento', $numero_documento);
             $stmt->bindParam(':nombres', $nombres);
             $stmt->bindParam(':apellidos', $apellidos);
+            $stmt->bindParam(':jornal_diario', $jornal_diario);
             $stmt->bindParam(':fecha_ingreso', $fecha_ingreso);
             $stmt->bindParam(':id_trabajador', $id_trabajador);
             return $stmt->execute();
@@ -89,7 +88,6 @@ class Trabajador {
         }
     }
 
-    // Desactivar o Activar trabajador
     public function cambiarEstado($id_trabajador, $estado_actual) {
         try {
             $nuevo_estado = ($estado_actual == 1) ? 0 : 1; 
