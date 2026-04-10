@@ -85,6 +85,13 @@ if (isset($_SESSION['usuario_id'])) {
             $controlador = new ActividadDiariaController();
             $controlador->guardarActividad();
         }
+
+        // --- REPORTES EXCEL ---
+        if (isset($_GET['accion']) && $_GET['accion'] == 'exportar_excel') {
+            require_once "controllers/ReporteController.php";
+            $controlador = new ReporteController();
+            $controlador->exportarExcel();
+        }
     }
 
     // Finalmente, mostramos el Dashboard
