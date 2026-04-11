@@ -10,7 +10,6 @@ $listaTrabajadores = $trabajadorModel->listarTrabajadores();
 $asistenciaModel = new Asistencia();
 $listaAsistencias = $asistenciaModel->listarAsistenciasHoy($fecha_seleccionada);
 
-// Organizamos las asistencias por trabajador para saber quién ya marcó
 $datosAsistencia = [];
 foreach ($listaAsistencias as $a) {
     $datosAsistencia[$a['id_trabajador']] = $a;
@@ -19,19 +18,26 @@ foreach ($listaAsistencias as $a) {
 
 <div class="container-fluid px-4 mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="text-primary m-0">⏱️ Control de Asistencias (Ingreso y Salida)</h3>
+        <h3 class="text-primary m-0">⏱️ Control de Asistencias y Permisos</h3>
     </div>
 
     <?php if(isset($_GET['mensaje'])): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <strong>¡Aviso!</strong> 
-            <?php 
-                if($_GET['mensaje'] == 'exito_ingreso') echo "Hora de INGRESO registrada correctamente.";
-                if($_GET['mensaje'] == 'exito_salida') echo "Hora de SALIDA registrada correctamente.";
-                if($_GET['mensaje'] == 'error') echo "Ocurrió un error en la operación.";
-            ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+        <?php if($_GET['mensaje'] == 'duplicado'): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>🛑 Regla RN04 Activada:</strong> El trabajador ya tiene un registro en esta fecha. No se permiten duplicados.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php else: ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>¡Aviso!</strong> 
+                <?php 
+                    if($_GET['mensaje'] == 'exito_ingreso') echo "Registro de entrada/permiso guardado correctamente.";
+                    if($_GET['mensaje'] == 'exito_salida') echo "Hora de SALIDA registrada correctamente.";
+                    if($_GET['mensaje'] == 'error') echo "Ocurrió un error en la operación.";
+                ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
 
     <div class="card border-0 shadow-sm mb-4">
@@ -69,19 +75,18 @@ foreach ($listaAsistencias as $a) {
                             $asistenciaHoy = isset($datosAsistencia[$id]) ? $datosAsistencia[$id] : null;
                     ?>
                         <tr>
-                            <td class="text-start fw-bold">
-                                <?php echo $t['nombres'] . ' ' . $t['apellidos']; ?>
-                            </td>
-                            <td>
-                                <span class="badge bg-info text-dark"><?php echo $t['nombre_area']; ?></span>
-                            </td>
+                            <td class="text-start fw-bold"><?php echo $t['nombres'] . ' ' . $t['apellidos']; ?></td>
+                            <td><span class="badge bg-info text-dark"><?php echo $t['nombre_area']; ?></span></td>
                             
                             <td>
                                 <?php if (!$asistenciaHoy): ?>
                                     <span class="badge bg-secondary">Sin marcar</span>
                                 <?php else: ?>
                                     <div class="text-success fw-bold small">
-                                        Entrada: <?php echo date('h:i A', strtotime($asistenciaHoy['hora_ingreso'])); ?>
+                                        Estado: <?php echo $asistenciaHoy['estado']; ?>
+                                    </div>
+                                    <div class="text-primary fw-bold small mt-1">
+                                        <?php echo ($asistenciaHoy['hora_ingreso'] != '00:00:00') ? 'Entrada: ' . date('h:i A', strtotime($asistenciaHoy['hora_ingreso'])) : ''; ?>
                                     </div>
                                     <?php if ($asistenciaHoy['hora_salida']): ?>
                                         <div class="text-danger fw-bold small mt-1">
@@ -97,16 +102,20 @@ foreach ($listaAsistencias as $a) {
                                         <input type="hidden" name="id_trabajador" value="<?php echo $id; ?>">
                                         <input type="hidden" name="fecha" value="<?php echo $fecha_seleccionada; ?>">
                                         
-                                        <input type="time" class="form-control form-control-sm" name="hora_ingreso" style="width: 110px;" required>
-                                        <select class="form-select form-select-sm" name="estado" style="width: 110px;">
+                                        <input type="time" class="form-control form-control-sm" name="hora_ingreso" style="width: 110px;">
+                                        
+                                        <select class="form-select form-select-sm border-primary fw-bold" name="estado" style="width: 140px;">
                                             <option value="Puntual">Puntual</option>
                                             <option value="Tardanza">Tardanza</option>
+                                            <option value="Falta Justificada">Falta Justificada</option>
+                                            <option value="Descanso Médico">Descanso Médico</option>
+                                            <option value="Permiso Especial">Permiso Especial</option>
                                         </select>
                                         <input type="text" class="form-control form-control-sm" name="observaciones" placeholder="Obs..." style="width: 100px;">
-                                        <button type="submit" class="btn btn-sm btn-success fw-bold">Entró</button>
+                                        <button type="submit" class="btn btn-sm btn-success fw-bold">Registrar</button>
                                     </form>
 
-                                <?php elseif ($asistenciaHoy && !$asistenciaHoy['hora_salida']): ?>
+                                <?php elseif ($asistenciaHoy && !$asistenciaHoy['hora_salida'] && in_array($asistenciaHoy['estado'], ['Puntual', 'Tardanza'])): ?>
                                     <form action="index.php?accion=guardar_salida" method="POST" class="d-flex justify-content-center align-items-center gap-2">
                                         <input type="hidden" name="id_asistencia" value="<?php echo $asistenciaHoy['id_asistencia']; ?>">
                                         <input type="time" class="form-control form-control-sm" name="hora_salida" style="width: 110px;" required>
@@ -114,17 +123,14 @@ foreach ($listaAsistencias as $a) {
                                     </form>
 
                                 <?php else: ?>
-                                    <span class="badge bg-success">Jornada Completada ✅</span>
+                                    <span class="badge bg-success">Jornada/Permiso Completado ✅</span>
                                 <?php endif; ?>
                             </td>
                         </tr>
                     <?php 
                         endif;
                     endforeach; 
-                    if (!$hayActivos): 
                     ?>
-                        <tr><td colspan="4" class="text-center py-4 text-muted">No hay trabajadores activos.</td></tr>
-                    <?php endif; ?>
                 </tbody>
             </table>
         </div>

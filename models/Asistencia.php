@@ -22,6 +22,16 @@ class Asistencia {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // 🔒 NUEVA FUNCIÓN: Validar Regla de Negocio RN04 (Cero duplicados)
+    public function verificarRegistroPrevio($id_trabajador, $fecha) {
+        $sql = "SELECT id_asistencia FROM asistencias WHERE id_trabajador = :id AND fecha = :fecha";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':id', $id_trabajador);
+        $stmt->bindParam(':fecha', $fecha);
+        $stmt->execute();
+        return $stmt->rowCount() > 0; // Retorna true si ya existe
+    }
+
     public function registrarIngreso($id_trabajador, $fecha, $hora_ingreso, $estado, $observaciones) {
         try {
             $sql = "INSERT INTO asistencias (id_trabajador, fecha, hora_ingreso, estado, observaciones) 
