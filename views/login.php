@@ -14,7 +14,7 @@
             <p class="text-muted">Ingresa tus credenciales para continuar</p>
         </div>
 
-<?php if(isset($error)): ?>
+        <?php if(isset($error)): ?>
             <div class="alert alert-danger text-center fw-bold">
                 <?php echo $error; ?>
             </div>
@@ -31,6 +31,11 @@
             </div>
             <button type="submit" class="btn btn-primary w-100 fw-bold">Ingresar al Sistema</button>
         </form>
+
+        <div class="text-center mt-3">
+            <a href="recuperar.php" class="text-decoration-none small fw-bold">¿Olvidaste tu contraseña?</a>
+        </div>
+        
     </div>
 
 </body>
