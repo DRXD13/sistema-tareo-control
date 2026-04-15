@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Sistema de Tareo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .sidebar { height: 100vh; background-color: #212529; }
-        .sidebar a { color: #cfd8dc; text-decoration: none; display: block; padding: 15px 20px; transition: 0.3s; }
-        .sidebar a:hover { background-color: #343a40; color: #fff; border-left: 4px solid #0d6efd; }
-    </style>
+    <link href="assets/css/estilos.css" rel="stylesheet">
 </head>
 <body>
     <?php 
@@ -78,7 +74,7 @@
                     require_once "views/" . $vista . ".php";
                 } else {
                 ?>
-                    <div class="card border-0 shadow-sm">
+                    <div class="card border-0 shadow-sm mt-4">
                         <div class="card-body p-5 text-center">
                             <h2 class="text-primary mb-3">¡Sistema de Tareo Iniciado!</h2>
                             <p class="lead text-muted">Selecciona una opción del menú lateral para comenzar a operar.</p>

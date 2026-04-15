@@ -1,0 +1,79 @@
+/* =========================================
+   DISEÑO DEL SISTEMA DE TAREO
+========================================= */
+body {
+    background-color: #f4f7f6; /* Un gris muy suave para que las tarjetas resalten */
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* --- MENÚ LATERAL (SIDEBAR) --- */
+.sidebar {
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); /* Degradado oscuro elegante */
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.sidebar h4 {
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.sidebar a {
+    color: #94a3b8;
+    margin: 4px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.sidebar a:hover {
+    background-color: #3b82f6; /* Azul brillante al pasar el mouse */
+    color: #ffffff;
+    transform: translateX(5px); /* Pequeño salto hacia la derecha */
+}
+
+/* --- TARJETAS (CARDS) --- */
+.card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Sombra suave para efecto 3D */
+    transition: transform 0.2s ease;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+/* --- BOTONES --- */
+.btn {
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px); /* El botón se levanta un poco al pasar el mouse */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* --- TABLAS --- */
+.table {
+    border-radius: 8px;
+    overflow: hidden; /* Para que los bordes redondeados apliquen a la tabla */
+}
+
+.table-secondary th {
+    background-color: #e2e8f0 !important;
+    color: #475569;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+/* --- LOGIN CARD --- */
+.login-card {
+    border-radius: 15px;
+    border-top: 6px solid #0d6efd;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
