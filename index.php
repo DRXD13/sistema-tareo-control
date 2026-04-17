@@ -116,8 +116,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Si el usuario existe y la contraseña (encriptada) coincide
-    if ($usuario && password_verify($password, $usuario['password'])) {
+    $login_exitoso = false;
+
+    // LÓGICA CORREGIDA: Acepta tanto contraseñas seguras como texto plano
+    if ($usuario) {
+        if (password_verify($password, $usuario['password'])) {
+            // Caso A: La contraseña está encriptada (Ej: la clave temporal)
+            $login_exitoso = true;
+        } elseif ($password === $usuario['password']) {
+            // Caso B: La contraseña es la antigua escrita normal en la base de datos
+            $login_exitoso = true;
+        }
+    }
+
+    if ($login_exitoso) {
         // Guardamos sus datos en la sesión
         $_SESSION['usuario_id'] = $usuario['id_usuario'];
         $_SESSION['nombres'] = $usuario['nombres'];
