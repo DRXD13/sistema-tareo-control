@@ -86,5 +86,32 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function lanzarAlerta(tipo, titulo, mensaje) {
+            Swal.fire({
+                icon: tipo,
+                title: titulo,
+                text: mensaje,
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });
+        }
+
+        // Detección automática de alertas según la URL
+        <?php if (isset($_GET['alerta'])): ?>
+            <?php if ($_GET['alerta'] == 'guardado'): ?>
+                lanzarAlerta('success', '¡Registrado!', 'Los datos se guardaron correctamente.');
+            <?php elseif ($_GET['alerta'] == 'actualizado'): ?>
+                lanzarAlerta('info', '¡Comprobado!', 'La información ha sido actualizada.');
+            <?php elseif ($_GET['alerta'] == 'error'): ?>
+                lanzarAlerta('error', '¡Atención!', 'No se pudo completar la operación.');
+            <?php endif; ?>
+        <?php endif; ?>
+    </script>
 </body>
 </html>

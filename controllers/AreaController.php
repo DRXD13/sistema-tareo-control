@@ -12,15 +12,16 @@ class AreaController {
             $areaModel = new Area();
             $resultado = $areaModel->registrarArea($nombre_area);
 
-            // Redirigimos de vuelta a la pantalla de áreas
+            // Redirigimos disparando la ALERTA ANIMADA
             if ($resultado) {
-                header("Location: index.php?vista=areas&mensaje=exito");
+                header("Location: index.php?vista=areas&alerta=guardado");
             } else {
-                header("Location: index.php?vista=areas&mensaje=error");
+                header("Location: index.php?vista=areas&alerta=error");
             }
             exit();
         }
     }
+
     public function actualizarArea() {
         if (isset($_POST['id_area']) && isset($_POST['nombre_area'])) {
             $id_area = $_POST['id_area'];
@@ -29,10 +30,11 @@ class AreaController {
             $areaModel = new Area();
             $resultado = $areaModel->actualizarArea($id_area, $nombre_area);
 
+            // Redirigimos disparando la ALERTA ANIMADA de actualización
             if ($resultado) {
-                header("Location: index.php?vista=areas&mensaje=exito_editar");
+                header("Location: index.php?vista=areas&alerta=actualizado");
             } else {
-                header("Location: index.php?vista=areas&mensaje=error");
+                header("Location: index.php?vista=areas&alerta=error");
             }
             exit();
         }
@@ -46,7 +48,8 @@ class AreaController {
             $areaModel = new Area();
             $resultado = $areaModel->cambiarEstado($id_area, $estado_actual);
 
-            header("Location: index.php?vista=areas&mensaje=exito_estado");
+            // Redirigimos disparando la ALERTA ANIMADA
+            header("Location: index.php?vista=areas&alerta=actualizado");
             exit();
         }
     }
