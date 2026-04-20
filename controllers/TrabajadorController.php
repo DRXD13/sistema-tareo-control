@@ -12,7 +12,7 @@ class TrabajadorController {
             $numero_documento = trim($_POST['numero_documento']);
             $nombres = trim($_POST['nombres']);
             $apellidos = trim($_POST['apellidos']);
-            $jornal_diario = $_POST['jornal_diario']; // Atrapamos el jornal
+            $jornal_diario = $_POST['jornal_diario']; 
             $fecha_ingreso = $_POST['fecha_ingreso'];
 
             $trabajadorModel = new Trabajador();
@@ -21,10 +21,11 @@ class TrabajadorController {
                 $numero_documento, $nombres, $apellidos, $jornal_diario, $fecha_ingreso
             );
 
+            // Redirigimos disparando la ALERTA ANIMADA
             if ($resultado) {
-                header("Location: index.php?vista=trabajadores&mensaje=exito");
+                header("Location: index.php?vista=trabajadores&alerta=guardado");
             } else {
-                header("Location: index.php?vista=trabajadores&mensaje=error");
+                header("Location: index.php?vista=trabajadores&alerta=error");
             }
             exit();
         }
@@ -40,7 +41,7 @@ class TrabajadorController {
             $numero_documento = trim($_POST['numero_documento']);
             $nombres = trim($_POST['nombres']);
             $apellidos = trim($_POST['apellidos']);
-            $jornal_diario = $_POST['jornal_diario']; // Atrapamos el jornal
+            $jornal_diario = $_POST['jornal_diario']; 
             $fecha_ingreso = $_POST['fecha_ingreso'];
 
             $trabajadorModel = new Trabajador();
@@ -49,10 +50,11 @@ class TrabajadorController {
                 $tipo_documento, $numero_documento, $nombres, $apellidos, $jornal_diario, $fecha_ingreso
             );
 
+            // Redirigimos disparando la ALERTA ANIMADA de actualización
             if ($resultado) {
-                header("Location: index.php?vista=trabajadores&mensaje=exito_editar");
+                header("Location: index.php?vista=trabajadores&alerta=actualizado");
             } else {
-                header("Location: index.php?vista=trabajadores&mensaje=error");
+                header("Location: index.php?vista=trabajadores&alerta=error");
             }
             exit();
         }
@@ -66,7 +68,8 @@ class TrabajadorController {
             $trabajadorModel = new Trabajador();
             $trabajadorModel->cambiarEstado($id_trabajador, $estado_actual);
 
-            header("Location: index.php?vista=trabajadores&mensaje=exito_estado");
+            // Redirigimos disparando la ALERTA ANIMADA
+            header("Location: index.php?vista=trabajadores&alerta=actualizado");
             exit();
         }
     }

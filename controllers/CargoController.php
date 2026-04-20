@@ -8,10 +8,11 @@ class CargoController {
             $cargoModel = new Cargo();
             $resultado = $cargoModel->registrarCargo($nombre_cargo);
 
+            // Redirigimos disparando la ALERTA ANIMADA
             if ($resultado) {
-                header("Location: index.php?vista=cargos&mensaje=exito");
+                header("Location: index.php?vista=cargos&alerta=guardado");
             } else {
-                header("Location: index.php?vista=cargos&mensaje=error");
+                header("Location: index.php?vista=cargos&alerta=error");
             }
             exit();
         }
@@ -25,10 +26,11 @@ class CargoController {
             $cargoModel = new Cargo();
             $resultado = $cargoModel->actualizarCargo($id_cargo, $nombre_cargo);
 
+            // Redirigimos disparando la ALERTA ANIMADA de actualización
             if ($resultado) {
-                header("Location: index.php?vista=cargos&mensaje=exito_editar");
+                header("Location: index.php?vista=cargos&alerta=actualizado");
             } else {
-                header("Location: index.php?vista=cargos&mensaje=error");
+                header("Location: index.php?vista=cargos&alerta=error");
             }
             exit();
         }
@@ -42,7 +44,8 @@ class CargoController {
             $cargoModel = new Cargo();
             $cargoModel->cambiarEstado($id_cargo, $estado_actual);
 
-            header("Location: index.php?vista=cargos&mensaje=exito_estado");
+            // Redirigimos disparando la ALERTA ANIMADA
+            header("Location: index.php?vista=cargos&alerta=actualizado");
             exit();
         }
     }
