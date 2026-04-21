@@ -8,10 +8,11 @@ class CuadrillaController {
             $cuadrillaModel = new Cuadrilla();
             $resultado = $cuadrillaModel->registrarCuadrilla($nombre_cuadrilla);
 
+            // Redirigimos disparando la ALERTA ANIMADA
             if ($resultado) {
-                header("Location: index.php?vista=cuadrillas&mensaje=exito");
+                header("Location: index.php?vista=cuadrillas&alerta=guardado");
             } else {
-                header("Location: index.php?vista=cuadrillas&mensaje=error");
+                header("Location: index.php?vista=cuadrillas&alerta=error");
             }
             exit();
         }
@@ -25,10 +26,11 @@ class CuadrillaController {
             $cuadrillaModel = new Cuadrilla();
             $resultado = $cuadrillaModel->actualizarCuadrilla($id_cuadrilla, $nombre_cuadrilla);
 
+            // Redirigimos disparando la ALERTA ANIMADA de actualización
             if ($resultado) {
-                header("Location: index.php?vista=cuadrillas&mensaje=exito_editar");
+                header("Location: index.php?vista=cuadrillas&alerta=actualizado");
             } else {
-                header("Location: index.php?vista=cuadrillas&mensaje=error");
+                header("Location: index.php?vista=cuadrillas&alerta=error");
             }
             exit();
         }
@@ -42,7 +44,8 @@ class CuadrillaController {
             $cuadrillaModel = new Cuadrilla();
             $cuadrillaModel->cambiarEstado($id_cuadrilla, $estado_actual);
 
-            header("Location: index.php?vista=cuadrillas&mensaje=exito_estado");
+            // Redirigimos disparando la ALERTA ANIMADA
+            header("Location: index.php?vista=cuadrillas&alerta=actualizado");
             exit();
         }
     }
