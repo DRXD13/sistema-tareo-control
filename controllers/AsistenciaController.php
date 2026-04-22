@@ -21,7 +21,8 @@ class AsistenciaController {
 
             // 🛑 APLICAMOS LA REGLA RN04 DEL DOCUMENTO: Bloquear si ya marcó hoy
             if ($asistenciaModel->verificarRegistroPrevio($id_trabajador, $fecha)) {
-                header("Location: index.php?vista=asistencias&mensaje=duplicado");
+                // Disparamos una alerta especial de duplicado
+                header("Location: index.php?vista=asistencias&alerta=duplicado");
                 exit();
             }
 
@@ -29,11 +30,13 @@ class AsistenciaController {
 
             if ($resultado) {
                 $bitacora = new Bitacora();
-                $id_usuario = isset($_SESSION['id_usuario']) ? $_SESSION['id_usuario'] : 1; 
+                $id_usuario = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 1; 
                 $bitacora->registrarAccion($id_usuario, "Registró estado de asistencia ($estado) del trabajador ID: $id_trabajador");
-                header("Location: index.php?vista=asistencias&mensaje=exito_ingreso");
+                
+                // Alerta de guardado exitoso
+                header("Location: index.php?vista=asistencias&alerta=guardado");
             } else {
-                header("Location: index.php?vista=asistencias&mensaje=error");
+                header("Location: index.php?vista=asistencias&alerta=error");
             }
             exit();
         }
@@ -49,11 +52,13 @@ class AsistenciaController {
 
             if ($resultado) {
                 $bitacora = new Bitacora();
-                $id_usuario = isset($_SESSION['id_usuario']) ? $_SESSION['id_usuario'] : 1;
+                $id_usuario = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 1;
                 $bitacora->registrarAccion($id_usuario, "Registró hora de SALIDA ($hora_salida) en la asistencia ID: $id_asistencia");
-                header("Location: index.php?vista=asistencias&mensaje=exito_salida");
+                
+                // Alerta de actualización exitosa (porque estamos actualizando la salida)
+                header("Location: index.php?vista=asistencias&alerta=actualizado");
             } else {
-                header("Location: index.php?vista=asistencias&mensaje=error");
+                header("Location: index.php?vista=asistencias&alerta=error");
             }
             exit();
         }

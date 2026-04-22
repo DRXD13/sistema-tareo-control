@@ -8,10 +8,11 @@ class ActividadController {
             $actividadModel = new Actividad();
             $resultado = $actividadModel->registrarActividad($nombre_actividad);
 
+            // Redirigimos disparando la ALERTA ANIMADA
             if ($resultado) {
-                header("Location: index.php?vista=actividades&mensaje=exito");
+                header("Location: index.php?vista=actividades&alerta=guardado");
             } else {
-                header("Location: index.php?vista=actividades&mensaje=error");
+                header("Location: index.php?vista=actividades&alerta=error");
             }
             exit();
         }
@@ -25,10 +26,11 @@ class ActividadController {
             $actividadModel = new Actividad();
             $resultado = $actividadModel->actualizarActividad($id_actividad, $nombre_actividad);
 
+            // Redirigimos disparando la ALERTA ANIMADA de actualización
             if ($resultado) {
-                header("Location: index.php?vista=actividades&mensaje=exito_editar");
+                header("Location: index.php?vista=actividades&alerta=actualizado");
             } else {
-                header("Location: index.php?vista=actividades&mensaje=error");
+                header("Location: index.php?vista=actividades&alerta=error");
             }
             exit();
         }
@@ -42,7 +44,8 @@ class ActividadController {
             $actividadModel = new Actividad();
             $actividadModel->cambiarEstado($id_actividad, $estado_actual);
 
-            header("Location: index.php?vista=actividades&mensaje=exito_estado");
+            // Redirigimos disparando la ALERTA ANIMADA
+            header("Location: index.php?vista=actividades&alerta=actualizado");
             exit();
         }
     }

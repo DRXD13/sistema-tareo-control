@@ -31,10 +31,11 @@ class TareoController {
                 }
             }
 
+            // Redirigimos disparando la ALERTA ANIMADA
             if ($exito) {
-                header("Location: index.php?vista=tareo&fecha=" . $fecha . "&mensaje=exito");
+                header("Location: index.php?vista=tareo&fecha=" . $fecha . "&alerta=guardado");
             } else {
-                header("Location: index.php?vista=tareo&fecha=" . $fecha . "&mensaje=error");
+                header("Location: index.php?vista=tareo&fecha=" . $fecha . "&alerta=error");
             }
             exit();
         }

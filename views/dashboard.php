@@ -108,6 +108,8 @@
                 lanzarAlerta('success', '¡Registrado!', 'Los datos se guardaron correctamente.');
             <?php elseif ($_GET['alerta'] == 'actualizado'): ?>
                 lanzarAlerta('info', '¡Comprobado!', 'La información ha sido actualizada.');
+            <?php elseif ($_GET['alerta'] == 'duplicado'): ?>
+                lanzarAlerta('warning', '¡Atención!', 'El trabajador ya tiene una asistencia registrada hoy.');
             <?php elseif ($_GET['alerta'] == 'error'): ?>
                 lanzarAlerta('error', '¡Atención!', 'No se pudo completar la operación.');
             <?php endif; ?>
