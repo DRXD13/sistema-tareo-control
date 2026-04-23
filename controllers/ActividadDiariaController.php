@@ -20,12 +20,13 @@ class ActividadDiariaController {
             if ($resultado) {
                 // BITÁCORA: Registramos quién guardó este reporte
                 $bitacora = new Bitacora();
-                $id_usuario = isset($_SESSION['id_usuario']) ? $_SESSION['id_usuario'] : 1;
+                $id_usuario = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 1;
                 $bitacora->registrarAccion($id_usuario, "Registró actividad diaria para el trabajador ID: $id_trabajador");
                 
-                header("Location: index.php?vista=actividades_diarias&fecha=$fecha&mensaje=exito");
+                // Redirigimos disparando la ALERTA ANIMADA
+                header("Location: index.php?vista=actividades_diarias&fecha=$fecha&alerta=guardado");
             } else {
-                header("Location: index.php?vista=actividades_diarias&fecha=$fecha&mensaje=error");
+                header("Location: index.php?vista=actividades_diarias&fecha=$fecha&alerta=error");
             }
             exit();
         }

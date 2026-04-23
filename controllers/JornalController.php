@@ -30,10 +30,11 @@ class JornalController {
                 }
             }
 
+            // Redirigimos disparando la ALERTA ANIMADA
             if ($exito) {
-                header("Location: index.php?vista=jornales&fecha_inicio=$fecha_inicio&fecha_fin=$fecha&mensaje=exito");
+                header("Location: index.php?vista=jornales&fecha_inicio=$fecha_inicio&fecha_fin=$fecha&alerta=guardado");
             } else {
-                header("Location: index.php?vista=jornales&fecha_inicio=$fecha_inicio&fecha_fin=$fecha&mensaje=error");
+                header("Location: index.php?vista=jornales&fecha_inicio=$fecha_inicio&fecha_fin=$fecha&alerta=error");
             }
             exit();
         }
