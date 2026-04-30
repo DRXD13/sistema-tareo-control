@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistema de Tareo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/estilos.css" rel="stylesheet">
+</head>
+<body>
+    <?php 
+    // Capturamos el rol actual para simplificar la lógica de validación
+    $rol_actual = isset($_SESSION['id_rol']) ? $_SESSION['id_rol'] : 0; 
+    ?>
+    <div class="d-flex">
+        <!-- MENÚ LATERAL -->
+        <div class="sidebar" style="width: 260px; min-height: 100vh;">
+            <h4 class="text-white text-center py-4 border-bottom border-secondary m-0">
+                ⚙️ Tareo Web
+            </h4>
+            <div class="mt-3">
+                <a href="index.php?vista=inicio">🏠 Inicio</a>
+                
+                <?php if (in_array($rol_actual, [1])): // Solo Admin ?>
+                    <a href="index.php?vista=areas">🏢 Gestión de Áreas</a>
+                    <a href="index.php?vista=cargos">💼 Gestión de Cargos</a>
+                    <a href="index.php?vista=actividades">⚙️ Catálogo Actividades</a>
+                <?php endif; ?>
+
+                <?php if (in_array($rol_actual, [1, 2])): // Admin y Supervisor ?>
+                    <a href="index.php?vista=cuadrillas">🚜 Gestión de Cuadrillas</a>
+                <?php endif; ?>
+
+                <?php if (in_array($rol_actual, [1, 3, 4])): // Admin, RRHH, Jefe Área ?>
+                    <a href="index.php?vista=trabajadores">👥 Gestión de Personal</a>
+                <?php endif; ?>
+
+                <?php if (in_array($rol_actual, [1, 2, 3, 4])): // Todos los roles ?>
+                    <a href="index.php?vista=asistencias">⏱️ Asistencias (Ingreso/Salida)</a>
+                    <a href="index.php?vista=tareo">📋 Tareo Diario</a>
+                    <a href="index.php?vista=actividades_diarias">🛠️ Actividades Diarias</a>
+                <?php endif; ?>
+
+                <?php if (in_array($rol_actual, [1, 3])): // Admin y RRHH ?>
+                    <a href="index.php?vista=jornales">💰 Control de Jornales</a>
+                    <a href="index.php?vista=reportes">📊 Reportes Generales</a>
+                <?php endif; ?>
+
+                <?php if (in_array($rol_actual, [1])): // Solo Admin ?>
+                    <a href="index.php?vista=bitacora">📓 Bitácora del Sistema</a>
+                <?php endif; ?>
+            </div>
+            
+            <div style="position: absolute; bottom: 20px; width: 260px;">
+                <a href="logout.php" class="text-danger fw-bold">🚪 Cerrar Sesión</a>
+            </div>
+        </div>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="flex-grow-1 bg-light">
+            <div class="bg-white p-3 shadow-sm d-flex justify-content-between align-items-center mb-4">
+                <h5 class="m-0 text-secondary">Panel de Control Operativo</h5>
+                <div>
+                    <span class="me-3">👤 Bienvenido, <b><?php echo $_SESSION['nombres']; ?></b> (Rol: <?php echo $rol_actual; ?>)</span>
+                </div>
+            </div>
+
+            <div class="container-fluid px-4">
+                <?php 
+                $vista = isset($_GET['vista']) ? $_GET['vista'] : 'inicio';
+
+                // Enrutador de Vistas (AQUÍ AGREGAMOS 'inicio' A LA LISTA)
+                $vistas_permitidas = ['inicio', 'areas', 'cargos', 'cuadrillas', 'trabajadores', 'tareo', 'actividades', 'jornales', 'asistencias', 'actividades_diarias', 'bitacora', 'reportes'];
+                
+                if (in_array($vista, $vistas_permitidas)) {
+                    require_once "views/" . $vista . ".php";
+                } else {
+                    // Si por algún error escriben una vista que no existe en la URL, 
+                    // lo mandamos por seguridad al dashboard principal en lugar de mostrar un error.
+                    require_once "views/inicio.php";
+                } 
+                ?>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function lanzarAlerta(tipo, titulo, mensaje) {
+            Swal.fire({
+                icon: tipo,
+                title: titulo,
+                text: mensaje,
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                toast: true,
+                position: 'top-end'
+            });
+        }
+
+        // Detección automática de alertas según la URL
+        <?php if (isset($_GET['alerta'])): ?>
+            <?php if ($_GET['alerta'] == 'guardado'): ?>
+                lanzarAlerta('success', '¡Registrado!', 'Los datos se guardaron correctamente.');
+            <?php elseif ($_GET['alerta'] == 'actualizado'): ?>
+                lanzarAlerta('info', '¡Comprobado!', 'La información ha sido actualizada.');
+            <?php elseif ($_GET['alerta'] == 'duplicado'): ?>
+                lanzarAlerta('warning', '¡Atención!', 'El trabajador ya tiene una asistencia registrada hoy.');
+            <?php elseif ($_GET['alerta'] == 'error'): ?>
+                lanzarAlerta('error', '¡Atención!', 'No se pudo completar la operación.');
+            <?php endif; ?>
+        <?php endif; ?>
+    </script>
+</body>
+</html>
