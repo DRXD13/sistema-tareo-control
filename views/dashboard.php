@@ -13,6 +13,7 @@
     $rol_actual = isset($_SESSION['id_rol']) ? $_SESSION['id_rol'] : 0; 
     ?>
     <div class="d-flex">
+        <!-- MENÚ LATERAL -->
         <div class="sidebar" style="width: 260px; min-height: 100vh;">
             <h4 class="text-white text-center py-4 border-bottom border-secondary m-0">
                 ⚙️ Tareo Web
@@ -55,9 +56,10 @@
             </div>
         </div>
 
+        <!-- CONTENIDO PRINCIPAL -->
         <div class="flex-grow-1 bg-light">
             <div class="bg-white p-3 shadow-sm d-flex justify-content-between align-items-center mb-4">
-                <h5 class="m-0 text-secondary">Panel de Control</h5>
+                <h5 class="m-0 text-secondary">Panel de Control Operativo</h5>
                 <div>
                     <span class="me-3">👤 Bienvenido, <b><?php echo $_SESSION['nombres']; ?></b> (Rol: <?php echo $rol_actual; ?>)</span>
                 </div>
@@ -67,20 +69,14 @@
                 <?php 
                 $vista = isset($_GET['vista']) ? $_GET['vista'] : 'inicio';
 
-                // Enrutador de Vistas
-                $vistas_permitidas = ['areas', 'cargos', 'cuadrillas', 'trabajadores', 'tareo', 'actividades', 'jornales', 'asistencias', 'actividades_diarias', 'bitacora', 'reportes'];
+                // Enrutador de Vistas (AQUÍ AGREGAMOS 'inicio' A LA LISTA)
+                $vistas_permitidas = ['inicio', 'areas', 'cargos', 'cuadrillas', 'trabajadores', 'tareo', 'actividades', 'jornales', 'asistencias', 'actividades_diarias', 'bitacora', 'reportes'];
                 
                 if (in_array($vista, $vistas_permitidas)) {
                     require_once "views/" . $vista . ".php";
                 } else {
-                ?>
-                    <div class="card border-0 shadow-sm mt-4">
-                        <div class="card-body p-5 text-center">
-                            <h2 class="text-primary mb-3">¡Sistema de Tareo Iniciado!</h2>
-                            <p class="lead text-muted">Selecciona una opción del menú lateral para comenzar a operar.</p>
-                        </div>
-                    </div>
-                <?php 
+                    // Cargamos la vista de inicio si no encuentra la ruta
+                    require_once "views/inicio.php";
                 } 
                 ?>
             </div>
@@ -88,7 +84,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function lanzarAlerta(tipo, titulo, mensaje) {
