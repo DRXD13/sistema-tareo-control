@@ -43,7 +43,7 @@ if (isset($_GET['editar'])) {
                         <?php if (count($listaAreas) > 0): ?>
                             <?php foreach ($listaAreas as $area): ?>
                                 <tr>
-                                    <td class="text-muted fw-bold">#<?php echo $area['id_area']; ?></td>
+                                    <td class="text-muted fw-bold"><?php echo $area['id_area']; ?></td>
                                     <td class="fw-bold text-start text-dark"><?php echo $area['nombre_area']; ?></td>
                                     <td>
                                         <?php if ($area['estado'] == 1): ?>
@@ -90,7 +90,7 @@ if (isset($_GET['editar'])) {
                     <?php if($areaEditar): ?>
                         <input type="hidden" name="id_area" value="<?php echo $areaEditar['id_area']; ?>">
                         <div class="alert alert-warning small py-2">
-                            Estás modificando los datos del área <b>#<?php echo $areaEditar['id_area']; ?></b>.
+                            Estás modificando los datos del área <b><?php echo $areaEditar['id_area']; ?></b>.
                         </div>
                     <?php endif; ?>
 

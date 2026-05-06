@@ -42,7 +42,7 @@ if (isset($_GET['editar'])) {
                         <?php if (count($listaCargos) > 0): ?>
                             <?php foreach ($listaCargos as $cargo): ?>
                                 <tr>
-                                    <td class="text-muted fw-bold">#<?php echo $cargo['id_cargo']; ?></td>
+                                    <td class="text-muted fw-bold"><?php echo $cargo['id_cargo']; ?></td>
                                     <td class="fw-bold text-start text-dark"><?php echo $cargo['nombre_cargo']; ?></td>
                                     <td>
                                         <?php if ($cargo['estado'] == 1): ?>
@@ -89,7 +89,7 @@ if (isset($_GET['editar'])) {
                     <?php if($cargoEditar): ?>
                         <input type="hidden" name="id_cargo" value="<?php echo $cargoEditar['id_cargo']; ?>">
                         <div class="alert alert-warning small py-2">
-                            Estás modificando los datos del cargo <b>#<?php echo $cargoEditar['id_cargo']; ?></b>.
+                            Estás modificando los datos del cargo <b><?php echo $cargoEditar['id_cargo']; ?></b>.
                         </div>
                     <?php endif; ?>
 
