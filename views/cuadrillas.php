@@ -42,7 +42,7 @@ if (isset($_GET['editar'])) {
                         <?php if (count($listaCuadrillas) > 0): ?>
                             <?php foreach ($listaCuadrillas as $cuadrilla): ?>
                                 <tr>
-                                    <td class="text-muted fw-bold">#<?php echo $cuadrilla['id_cuadrilla']; ?></td>
+                                    <td class="text-muted fw-bold"><?php echo $cuadrilla['id_cuadrilla']; ?></td>
                                     <td class="fw-bold text-start text-dark"><?php echo $cuadrilla['nombre_cuadrilla']; ?></td>
                                     <td>
                                         <?php if ($cuadrilla['estado'] == 1): ?>
@@ -89,7 +89,7 @@ if (isset($_GET['editar'])) {
                     <?php if($cuadrillaEditar): ?>
                         <input type="hidden" name="id_cuadrilla" value="<?php echo $cuadrillaEditar['id_cuadrilla']; ?>">
                         <div class="alert alert-warning small py-2">
-                            Estás modificando los datos de la cuadrilla <b>#<?php echo $cuadrillaEditar['id_cuadrilla']; ?></b>.
+                            Estás modificando los datos de la cuadrilla <b><?php echo $cuadrillaEditar['id_cuadrilla']; ?></b>.
                         </div>
                     <?php endif; ?>
 

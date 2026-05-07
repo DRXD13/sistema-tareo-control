@@ -42,7 +42,7 @@ if (isset($_GET['editar'])) {
                         <?php if (count($listaActividades) > 0): ?>
                             <?php foreach ($listaActividades as $act): ?>
                                 <tr>
-                                    <td class="text-muted fw-bold">#<?php echo $act['id_actividad']; ?></td>
+                                    <td class="text-muted fw-bold"><?php echo $act['id_actividad']; ?></td>
                                     <td class="fw-bold text-start text-dark"><?php echo $act['nombre_actividad']; ?></td>
                                     <td>
                                         <?php if ($act['estado'] == 1): ?>
@@ -89,7 +89,7 @@ if (isset($_GET['editar'])) {
                     <?php if($actividadEditar): ?>
                         <input type="hidden" name="id_actividad" value="<?php echo $actividadEditar['id_actividad']; ?>">
                         <div class="alert alert-warning small py-2">
-                            Estás modificando los datos de la actividad <b>#<?php echo $actividadEditar['id_actividad']; ?></b>.
+                            Estás modificando los datos de la actividad <b><?php echo $actividadEditar['id_actividad']; ?></b>.
                         </div>
                     <?php endif; ?>
 
