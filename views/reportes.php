@@ -20,50 +20,57 @@ $gran_total_horas = 0;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <div class="container-fluid px-4 mt-4">
-    <h3 class="text-primary mb-4">📊 Reportes Generales Consolidados</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="text-primary m-0 fw-bold">📊 Reportes Generales Consolidados</h3>
+            <p class="text-muted small m-0">Exporta y descarga el resumen financiero de las planillas.</p>
+        </div>
+    </div>
 
-    <div class="card border-0 shadow-sm mb-4 border-top border-primary border-3" data-html2canvas-ignore="true">
-        <div class="card-body bg-light">
-            <form action="index.php" method="GET" class="row align-items-center">
+    <div class="card border-0 shadow-sm mb-4" data-html2canvas-ignore="true">
+        <div class="card-body bg-white d-flex flex-wrap align-items-center justify-content-between p-3">
+            <div class="text-secondary fw-bold mb-2 mb-md-0">
+                <span class="fs-5">📅 Parámetros del Reporte</span>
+            </div>
+            <form action="index.php" method="GET" class="d-flex flex-wrap align-items-center m-0 gap-3">
                 <input type="hidden" name="vista" value="reportes">
                 
-                <div class="col-md-3">
-                    <label class="fw-bold text-secondary small">Desde:</label>
-                    <input type="date" name="fecha_inicio" class="form-control form-control-sm border-primary" value="<?php echo $fecha_inicio; ?>" required>
-                </div>
-                <div class="col-md-3">
-                    <label class="fw-bold text-secondary small">Hasta:</label>
-                    <input type="date" name="fecha_fin" class="form-control form-control-sm border-primary" value="<?php echo $fecha_fin; ?>" required>
-                </div>
-                <div class="col-md-3 mt-4">
-                    <button type="submit" class="btn btn-sm btn-primary fw-bold px-4">🔍 Generar Reporte</button>
+                <div class="d-flex align-items-center">
+                    <label class="fw-bold me-2 text-secondary small">Desde:</label>
+                    <input type="date" name="fecha_inicio" class="form-control form-control-sm border-primary shadow-sm" value="<?php echo $fecha_inicio; ?>" required>
                 </div>
                 
-                <div class="col-md-3 mt-4 text-end">
-                    <?php if (count($listaReporte) > 0): ?>
-                        <button type="button" onclick="exportarPDF()" class="btn btn-sm btn-danger fw-bold shadow-sm me-1">📄 Descargar PDF</button>
-                        
-                        <a href="index.php?accion=exportar_excel&fecha_inicio=<?php echo $fecha_inicio; ?>&fecha_fin=<?php echo $fecha_fin; ?>" class="btn btn-sm btn-success fw-bold shadow-sm">📗 Descargar Excel</a>
-                    <?php endif; ?>
+                <div class="d-flex align-items-center">
+                    <label class="fw-bold me-2 text-secondary small">Hasta:</label>
+                    <input type="date" name="fecha_fin" class="form-control form-control-sm border-primary shadow-sm" value="<?php echo $fecha_fin; ?>" required>
                 </div>
+                
+                <button type="submit" class="btn btn-sm btn-primary fw-bold shadow-sm px-4">🔍 Generar Reporte</button>
+                
+                <?php if (count($listaReporte) > 0): ?>
+                    <div class="vr d-none d-md-block mx-1"></div> <button type="button" onclick="exportarPDF()" class="btn btn-sm btn-danger fw-bold shadow-sm">📄 Descargar PDF</button>
+                    <a href="index.php?accion=exportar_excel&fecha_inicio=<?php echo $fecha_inicio; ?>&fecha_fin=<?php echo $fecha_fin; ?>" class="btn btn-sm btn-success fw-bold shadow-sm">📗 Descargar Excel</a>
+                <?php endif; ?>
             </form>
         </div>
     </div>
 
-    <div id="contenidoParaPDF" class="bg-white p-3">
+    <div id="contenidoParaPDF" class="bg-light p-0 p-md-2">
         <div class="text-center mb-4 d-none" id="cabeceraImpresion">
-            <h4 class="fw-bold">Reporte de Planillas Consolidadas</h4>
+            <h4 class="fw-bold text-dark m-0">Reporte de Planillas Consolidadas</h4>
+            <p class="text-muted small">Período evaluado: <?php echo date('d/m/Y', strtotime($fecha_inicio)); ?> al <?php echo date('d/m/Y', strtotime($fecha_fin)); ?></p>
         </div>
 
         <div class="card border-0 shadow-sm">
-            <div class="card-header bg-dark text-white fw-bold">
-                Resumen de Planilla: <?php echo date('d/m/Y', strtotime($fecha_inicio)); ?> al <?php echo date('d/m/Y', strtotime($fecha_fin)); ?>
+            <div class="card-header bg-white fw-bold text-secondary py-3 d-flex justify-content-between align-items-center">
+                <span>📋 Resumen de Planilla</span>
+                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 shadow-sm">Período: <?php echo date('d/m/Y', strtotime($fecha_inicio)); ?> al <?php echo date('d/m/Y', strtotime($fecha_fin)); ?></span>
             </div>
             <div class="card-body p-0 table-responsive">
-                <table class="table table-striped table-bordered m-0 align-middle text-center" style="font-size: 0.9rem;">
-                    <thead class="table-secondary">
+                <table class="table table-hover m-0 align-middle text-center" style="font-size: 0.95rem;">
+                    <thead class="table-light text-secondary">
                         <tr>
-                            <th class="text-start">Trabajador</th>
+                            <th class="text-start ps-4">Trabajador</th>
                             <th>Documento</th>
                             <th>Cargo</th>
                             <th>Total Horas</th>
@@ -77,21 +84,25 @@ $gran_total_horas = 0;
                                 $gran_total_horas += $r['total_horas'];
                             ?>
                                 <tr>
-                                    <td class="text-start fw-bold">👤 <?php echo $r['nombres'] . ' ' . $r['apellidos']; ?></td>
-                                    <td class="text-muted"><?php echo $r['numero_documento']; ?></td>
-                                    <td><?php echo $r['nombre_cargo']; ?></td>
-                                    <td><?php echo $r['total_horas']; ?> hrs</td>
-                                    <td class="text-success fw-bold">S/ <?php echo number_format($r['total_pagado'], 2); ?></td>
+                                    <td class="text-start ps-4 fw-bold text-dark">👤 <?php echo $r['nombres'] . ' ' . $r['apellidos']; ?></td>
+                                    <td class="text-muted small"><?php echo $r['numero_documento']; ?></td>
+                                    <td>
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary px-3 rounded-pill">
+                                            <?php echo $r['nombre_cargo']; ?>
+                                        </span>
+                                    </td>
+                                    <td class="fw-semibold text-dark"><?php echo $r['total_horas']; ?> hrs</td>
+                                    <td class="text-success fw-bold fs-6">S/ <?php echo number_format($r['total_pagado'], 2); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                             
-                            <tr class="table-dark fs-6">
-                                <td colspan="3" class="text-end fw-bold">GRAN TOTAL:</td>
-                                <td class="fw-bold text-warning"><?php echo $gran_total_horas; ?> hrs</td>
-                                <td class="fw-bold text-success fs-5">S/ <?php echo number_format($gran_total_dinero, 2); ?></td>
+                            <tr class="bg-light border-top border-2 border-primary">
+                                <td colspan="3" class="text-end fw-bold text-primary fs-5 pe-4">GRAN TOTAL CONSOLIDADO:</td>
+                                <td class="text-dark fw-bold fs-5"><?php echo $gran_total_horas; ?> hrs</td>
+                                <td class="text-primary fw-bold fs-4 bg-primary bg-opacity-10">S/ <?php echo number_format($gran_total_dinero, 2); ?></td>
                             </tr>
                         <?php else: ?>
-                            <tr><td colspan="5" class="text-center py-5 text-muted fs-5">No hay jornales cerrados en este rango de fechas.</td></tr>
+                            <tr><td colspan="5" class="text-center py-5 text-danger fw-bold">No hay jornales cerrados en este rango de fechas.</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -109,7 +120,7 @@ function exportarPDF() {
     
     var opciones = {
         margin:       10,
-        filename:     'Reporte_Planilla_<?php echo $fecha_inicio; ?>.pdf',
+        filename:     'Reporte_Planilla_<?php echo $fecha_inicio; ?>_al_<?php echo $fecha_fin; ?>.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
