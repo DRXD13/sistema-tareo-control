@@ -41,7 +41,7 @@ $listaBitacora = $bitacoraModel->listarBitacora();
                         <?php if (count($listaBitacora) > 0): ?>
                             <?php foreach ($listaBitacora as $b): ?>
                                 <tr>
-                                    <td class="text-muted fw-bold ps-4">#<?php echo $b['id_bitacora']; ?></td>
+                                    <td class="text-muted fw-bold ps-4"><?php echo $b['id_bitacora']; ?></td>
                                     <td>
                                         <div class="fw-bold text-dark"><?php echo date('d/m/Y', strtotime($b['fecha_hora'])); ?></div>
                                         <div class="text-muted small">⏰ <?php echo date('h:i A', strtotime($b['fecha_hora'])); ?></div>
