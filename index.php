@@ -2,10 +2,27 @@
 // 1. Arrancamos la sesión de PHP (obligatorio para logueos)
 session_start();
 
-// 2. Si el usuario ya está logueado, verificamos qué acción quiere hacer
+// --- 🛡️ MEJORA 1: CIERRE POR INACTIVIDAD (30 MINUTOS) ---
+$tiempo_limite_inactividad = 1800; // 1800 segundos = 30 minutos
+
+// 2. Si el usuario ya está logueado, verificamos su actividad y qué acción quiere hacer
 if (isset($_SESSION['usuario_id'])) {
     
-// Si hay una acción por ejecutar
+    // Verificamos si la sesión ha expirado por inactividad
+    if (isset($_SESSION['ultimo_acceso'])) {
+        $tiempo_transcurrido = time() - $_SESSION['ultimo_acceso'];
+        if ($tiempo_transcurrido > $tiempo_limite_inactividad) {
+            session_unset();
+            session_destroy();
+            // Lo mandamos al login con una alerta de que su sesión expiró
+            header("Location: index.php?error=expirado");
+            exit();
+        }
+    }
+    // Renovamos el temporizador porque el usuario acaba de interactuar con el sistema
+    $_SESSION['ultimo_acceso'] = time();
+
+    // Si hay una acción por ejecutar
     if (isset($_GET['accion'])) {
         
         // --- ÁREAS ---
@@ -118,22 +135,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $login_exitoso = false;
 
-    // LÓGICA CORREGIDA: Acepta tanto contraseñas seguras como texto plano
+    // Acepta tanto contraseñas seguras como texto plano
     if ($usuario) {
         if (password_verify($password, $usuario['password'])) {
-            // Caso A: La contraseña está encriptada (Ej: la clave temporal)
             $login_exitoso = true;
         } elseif ($password === $usuario['password']) {
-            // Caso B: La contraseña es la antigua escrita normal en la base de datos
             $login_exitoso = true;
         }
     }
 
     if ($login_exitoso) {
+        
+        // --- 🛡️ MEJORA 2: PREVENCIÓN DE ROBO DE SESIÓN (Session Fixation) ---
+        session_regenerate_id(true);
+
         // Guardamos sus datos en la sesión
         $_SESSION['usuario_id'] = $usuario['id_usuario'];
         $_SESSION['nombres'] = $usuario['nombres'];
         $_SESSION['id_rol'] = $usuario['id_rol'];
+        $_SESSION['ultimo_acceso'] = time(); // Iniciamos el reloj de inactividad
         
         // Recargamos la página para que entre
         header("Location: index.php");
@@ -144,6 +164,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// 4. Si no está logueado, mostramos la vista del formulario
+// 4. Capturamos si el sistema expulsó al usuario por inactividad para mostrarle un mensaje
+if (isset($_GET['error']) && $_GET['error'] == 'expirado') {
+    $error = "Tu sesión ha expirado por inactividad. Vuelve a ingresar.";
+}
+
+// 5. Si no está logueado, mostramos la vista del formulario
 require_once "views/login.php";
 ?>
