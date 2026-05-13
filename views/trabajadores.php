@@ -127,14 +127,14 @@ if (isset($_GET['editar'])) {
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-secondary small fw-bold">Tipo Doc. <span class="text-danger">*</span></label>
-                            <select class="form-select" name="tipo_documento" required>
+                            <select class="form-select" name="tipo_documento" id="tipo_documento" required>
                                 <option value="DNI" <?php echo ($trabajadorEditar && $trabajadorEditar['tipo_documento'] == 'DNI') ? 'selected' : ''; ?>>DNI</option>
                                 <option value="CE" <?php echo ($trabajadorEditar && $trabajadorEditar['tipo_documento'] == 'CE') ? 'selected' : ''; ?>>Carnet Extranjería</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-secondary small fw-bold">Número Doc. <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="numero_documento" value="<?php echo $trabajadorEditar ? $trabajadorEditar['numero_documento'] : ''; ?>" required>
+                            <input type="text" class="form-control" name="numero_documento" id="numero_documento" value="<?php echo $trabajadorEditar ? $trabajadorEditar['numero_documento'] : ''; ?>" required>
                         </div>
                     </div>
 
@@ -208,11 +208,77 @@ if (isset($_GET['editar'])) {
     </div>
 </div>
 
-<?php if($trabajadorEditar): ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var myModal = new bootstrap.Modal(document.getElementById('modalTrabajador'));
-        myModal.show();
+        
+        // 1. Mostrar Modal de Edición automáticamente si existe
+        <?php if($trabajadorEditar): ?>
+            var myModal = new bootstrap.Modal(document.getElementById('modalTrabajador'));
+            myModal.show();
+        <?php endif; ?>
+
+        // 2. LÓGICA DE BLOQUEO DE TECLADO PARA EL DNI/CE
+        const selectDoc = document.getElementById('tipo_documento');
+        const inputNum = document.getElementById('numero_documento');
+
+        if (selectDoc && inputNum) {
+            function actualizarReglas() {
+                if (selectDoc.value === 'DNI') {
+                    inputNum.setAttribute('maxlength', '8');
+                    inputNum.setAttribute('pattern', '[0-9]{8}');
+                    inputNum.title = "El DNI debe tener exactamente 8 números";
+                    inputNum.value = inputNum.value.replace(/[^0-9]/g, '').substring(0, 8);
+                } else {
+                    inputNum.setAttribute('maxlength', '12');
+                    inputNum.removeAttribute('pattern');
+                    inputNum.title = "El CE debe tener entre 9 y 12 caracteres alfanuméricos";
+                }
+            }
+
+            actualizarReglas();
+            selectDoc.addEventListener('change', actualizarReglas);
+
+            inputNum.addEventListener('input', function() {
+                if (selectDoc.value === 'DNI') {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                } else {
+                    this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+                }
+            });
+        }
+
+        // 3. LÓGICA DE ALERTAS ANIMADAS (SWEETALERT2)
+        const urlParams = new URLSearchParams(window.location.search);
+        const alerta = urlParams.get('alerta');
+
+        if (alerta) {
+            let configuracion = {};
+
+            if (alerta === 'guardado' || alerta === 'actualizado') {
+                configuracion = { icon: 'success', title: '¡Operación Exitosa!', text: 'El trabajador fue guardado correctamente.' };
+            } else if (alerta === 'error_formato_dni') {
+                configuracion = { icon: 'error', title: 'DNI Inválido', text: 'El DNI debe contener exactamente 8 dígitos numéricos.' };
+            } else if (alerta === 'error_formato_ce') {
+                configuracion = { icon: 'error', title: 'CE Inválido', text: 'El Carnet de Extranjería debe tener entre 9 y 12 caracteres.' };
+            } else if (alerta === 'error') {
+                configuracion = { icon: 'error', title: 'Error del Sistema', text: 'Ocurrió un problema al procesar la solicitud.' };
+            }
+
+            if (Object.keys(configuracion).length > 0) {
+                Swal.fire({
+                    ...configuracion,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true
+                });
+
+                // Limpiar la URL para evitar alertas duplicadas
+                window.history.replaceState(null, null, window.location.pathname + "?vista=trabajadores");
+            }
+        }
     });
 </script>
-<?php endif; ?>

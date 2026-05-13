@@ -5,11 +5,29 @@ class TrabajadorController {
     
     public function guardarTrabajador() {
         if (isset($_POST['nombres'])) {
-            $id_area = $_POST['id_area'];
-            $id_cargo = $_POST['id_cargo'];
-            $id_cuadrilla = $_POST['id_cuadrilla']; 
             $tipo_documento = $_POST['tipo_documento'];
             $numero_documento = trim($_POST['numero_documento']);
+
+            // --- 🛡️ VALIDACIÓN DE SEGURIDAD (BACKEND) ---
+            if ($tipo_documento == 'DNI') {
+                // Obliga a que sean exactamente 8 números (sin letras, sin espacios)
+                if (!preg_match('/^[0-9]{8}$/', $numero_documento)) {
+                    header("Location: index.php?vista=trabajadores&alerta=error_formato_dni");
+                    exit();
+                }
+            } elseif ($tipo_documento == 'CE') {
+                // Obliga a que sean letras y números (entre 9 y 12 caracteres)
+                if (!preg_match('/^[a-zA-Z0-9]{9,12}$/', $numero_documento)) {
+                    header("Location: index.php?vista=trabajadores&alerta=error_formato_ce");
+                    exit();
+                }
+            }
+
+            $id_area = $_POST['id_area'];
+            $id_cargo = $_POST['id_cargo'];
+            // Validamos por si envían la cuadrilla vacía
+            $id_cuadrilla = empty($_POST['id_cuadrilla']) ? null : $_POST['id_cuadrilla']; 
+            
             $nombres = trim($_POST['nombres']);
             $apellidos = trim($_POST['apellidos']);
             $jornal_diario = $_POST['jornal_diario']; 
@@ -21,7 +39,6 @@ class TrabajadorController {
                 $numero_documento, $nombres, $apellidos, $jornal_diario, $fecha_ingreso
             );
 
-            // Redirigimos disparando la ALERTA ANIMADA
             if ($resultado) {
                 header("Location: index.php?vista=trabajadores&alerta=guardado");
             } else {
@@ -33,12 +50,27 @@ class TrabajadorController {
 
     public function actualizarTrabajador() {
         if (isset($_POST['id_trabajador'])) {
+            $tipo_documento = $_POST['tipo_documento'];
+            $numero_documento = trim($_POST['numero_documento']);
+
+            // --- 🛡️ VALIDACIÓN DE SEGURIDAD (BACKEND) ---
+            if ($tipo_documento == 'DNI') {
+                if (!preg_match('/^[0-9]{8}$/', $numero_documento)) {
+                    header("Location: index.php?vista=trabajadores&alerta=error_formato_dni");
+                    exit();
+                }
+            } elseif ($tipo_documento == 'CE') {
+                if (!preg_match('/^[a-zA-Z0-9]{9,12}$/', $numero_documento)) {
+                    header("Location: index.php?vista=trabajadores&alerta=error_formato_ce");
+                    exit();
+                }
+            }
+
             $id_trabajador = $_POST['id_trabajador'];
             $id_area = $_POST['id_area'];
             $id_cargo = $_POST['id_cargo'];
-            $id_cuadrilla = $_POST['id_cuadrilla'];
-            $tipo_documento = $_POST['tipo_documento'];
-            $numero_documento = trim($_POST['numero_documento']);
+            $id_cuadrilla = empty($_POST['id_cuadrilla']) ? null : $_POST['id_cuadrilla'];
+            
             $nombres = trim($_POST['nombres']);
             $apellidos = trim($_POST['apellidos']);
             $jornal_diario = $_POST['jornal_diario']; 
@@ -50,7 +82,6 @@ class TrabajadorController {
                 $tipo_documento, $numero_documento, $nombres, $apellidos, $jornal_diario, $fecha_ingreso
             );
 
-            // Redirigimos disparando la ALERTA ANIMADA de actualización
             if ($resultado) {
                 header("Location: index.php?vista=trabajadores&alerta=actualizado");
             } else {
@@ -68,7 +99,6 @@ class TrabajadorController {
             $trabajadorModel = new Trabajador();
             $trabajadorModel->cambiarEstado($id_trabajador, $estado_actual);
 
-            // Redirigimos disparando la ALERTA ANIMADA
             header("Location: index.php?vista=trabajadores&alerta=actualizado");
             exit();
         }
