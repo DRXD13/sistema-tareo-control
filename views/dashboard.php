@@ -25,27 +25,33 @@
             background-color: rgba(255,255,255,0.1);
             color: #ffffff !important;
             border-left: 4px solid #3b82f6;
-            padding-left: 25px; /* Efecto de movimiento */
+            padding-left: 25px;
         }
         .sidebar-brand {
             background-color: rgba(0,0,0,0.2);
             font-size: 1.2rem;
             letter-spacing: 1px;
         }
-        /* ESTILO PARA LA BARRA SUPERIOR */
+        /* BARRA SUPERIOR */
         .topbar-glass {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-bottom: 3px solid #3b82f6;
         }
+        /* Animación suave para el dropdown */
+        .dropdown-menu {
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="bg-light">
     <?php 
-    // Capturamos el rol actual para simplificar la lógica de validación
     $rol_actual = isset($_SESSION['id_rol']) ? $_SESSION['id_rol'] : 0; 
     
-    // Diccionario de roles para mostrar el nombre real
     $nombres_roles = [
         1 => 'Administrador',
         2 => 'Supervisor de Campo',
@@ -64,44 +70,44 @@
             <div class="flex-grow-1">
                 <a href="index.php?vista=inicio">🏠 Inicio</a>
                 
-                <?php if (in_array($rol_actual, [1])): // Solo Admin ?>
+                <?php if (in_array($rol_actual, [1])): ?>
                     <div class="text-secondary small fw-bold px-4 mt-3 mb-1 text-uppercase">Organización</div>
                     <a href="index.php?vista=areas">🏢 Gestión de Áreas</a>
                     <a href="index.php?vista=cargos">💼 Gestión de Cargos</a>
                     <a href="index.php?vista=actividades">⚙️ Catálogo Actividades</a>
                 <?php endif; ?>
 
-                <?php if (in_array($rol_actual, [1, 2])): // Admin y Supervisor ?>
+                <?php if (in_array($rol_actual, [1, 2])): ?>
                     <div class="text-secondary small fw-bold px-4 mt-3 mb-1 text-uppercase">Campo</div>
                     <a href="index.php?vista=cuadrillas">🚜 Gestión de Cuadrillas</a>
                 <?php endif; ?>
 
-                <?php if (in_array($rol_actual, [1, 3, 4])): // Admin, RRHH, Jefe Área ?>
+                <?php if (in_array($rol_actual, [1, 3, 4])): ?>
                     <div class="text-secondary small fw-bold px-4 mt-3 mb-1 text-uppercase">Personal</div>
                     <a href="index.php?vista=trabajadores">👥 Gestión de Personal</a>
                 <?php endif; ?>
 
-                <?php if (in_array($rol_actual, [1, 2, 3, 4])): // Todos los roles ?>
-                    <div class="text-secondary small fw-bold px-4 mt-3 mb-1 text-uppercase">Operaciones diarias</div>
-                    <a href="index.php?vista=asistencias">⏱️ Asistencias (Ingreso/Salida)</a>
+                <?php if (in_array($rol_actual, [1, 2, 3, 4])): ?>
+                    <div class="text-secondary small fw-bold px-4 mt-3 mb-1 text-uppercase">Operaciones</div>
+                    <a href="index.php?vista=asistencias">⏱️ Asistencias</a>
                     <a href="index.php?vista=tareo">📋 Tareo Diario</a>
                     <a href="index.php?vista=actividades_diarias">🛠️ Actividades Diarias</a>
                 <?php endif; ?>
 
-                <?php if (in_array($rol_actual, [1, 3])): // Admin y RRHH ?>
-                    <div class="text-secondary small fw-bold px-4 mt-3 mb-1 text-uppercase">Finanzas y Reportes</div>
-                    <a href="index.php?vista=jornales">💰 Control de Jornales</a>
+                <?php if (in_array($rol_actual, [1, 3])): ?>
+                    <div class="text-secondary small fw-bold px-4 mt-3 mb-1 text-uppercase">Reportes</div>
+                    <a href="index.php?vista=jornales">💰 Jornales</a>
                     <a href="index.php?vista=reportes">📊 Reportes Generales</a>
                 <?php endif; ?>
 
-                <?php if (in_array($rol_actual, [1])): // Solo Admin ?>
+                <?php if (in_array($rol_actual, [1])): ?>
                     <div class="text-secondary small fw-bold px-4 mt-3 mb-1 text-uppercase">Seguridad</div>
-                    <a href="index.php?vista=bitacora">📓 Bitácora del Sistema</a>
+                    <a href="index.php?vista=bitacora">📓 Bitácora</a>
                 <?php endif; ?>
             </div>
             
-            <div class="mt-auto border-top border-secondary pt-3 pb-4">
-                <a href="logout.php" class="text-danger fw-bold hover-danger">🚪 Cerrar Sesión</a>
+            <div class="mt-auto border-top border-secondary pt-3 pb-4 text-center">
+                <small class="text-secondary d-block mb-2">v2.0 Stable</small>
             </div>
         </div>
 
@@ -110,19 +116,40 @@
             <div class="topbar-glass p-3 shadow-sm d-flex justify-content-between align-items-center mb-4 sticky-top">
                 <div>
                     <h5 class="m-0 text-dark fw-bold" id="saludo-dinamico">Cargando...</h5>
-                    <small class="text-muted fw-bold" id="reloj-digital">📍 Conectando...</small>
+                    <small class="text-muted fw-bold" id="reloj-digital">📅 Conectando...</small>
                 </div>
-                <div class="text-end bg-light px-3 py-2 rounded shadow-sm border">
-                    <span class="d-block fw-bold text-dark" style="font-size: 0.9rem;">👤 <?php echo $_SESSION['nombres']; ?></span>
-                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary mt-1"><?php echo $nombre_rol_mostrar; ?></span>
+
+                <div class="dropdown">
+                    <button class="btn btn-light border shadow-sm px-3 py-2 text-start d-flex align-items-center" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="min-width: 200px; border-radius: 10px;">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2 shadow-sm" style="width: 35px; height: 35px; font-size: 1.2rem;">
+                            👤
+                        </div>
+                        <div style="line-height: 1.1;">
+                            <span class="d-block fw-bold text-dark" style="font-size: 0.85rem;"><?php echo explode(' ', trim($_SESSION['nombres']))[0]; ?></span>
+                            <span class="text-primary fw-bold" style="font-size: 0.7rem; text-uppercase: uppercase;"><?php echo $nombre_rol_mostrar; ?></span>
+                        </div>
+                        <div class="ms-auto ps-3 text-secondary" style="font-size: 0.6rem;">▼</div>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-2" aria-labelledby="userDropdown" style="border-radius: 12px; min-width: 200px;">
+                        <li><h6 class="dropdown-header text-uppercase text-muted fw-bold" style="font-size: 0.65rem;">Opciones de Cuenta</h6></li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center py-2 rounded" href="logout.php">
+                                <span class="me-2">🔄</span> Cambiar de usuario
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center py-2 rounded text-danger fw-bold" href="logout.php">
+                                <span class="me-2">🚪</span> Cerrar sesión
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
 
             <div class="container-fluid px-4 pb-4">
                 <?php 
                 $vista = isset($_GET['vista']) ? $_GET['vista'] : 'inicio';
-
-                // Enrutador de Vistas
                 $vistas_permitidas = ['inicio', 'areas', 'cargos', 'cuadrillas', 'trabajadores', 'tareo', 'actividades', 'jornales', 'asistencias', 'actividades_diarias', 'bitacora', 'reportes'];
                 
                 if (in_array($vista, $vistas_permitidas)) {
@@ -139,14 +166,12 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
-        // 1. Reloj en tiempo real y Saludo Dinámico
         function actualizarReloj() {
             const ahora = new Date();
             const horas = ahora.getHours();
             const minutos = ahora.getMinutes().toString().padStart(2, '0');
             const segundos = ahora.getSeconds().toString().padStart(2, '0');
             
-            // Lógica del saludo según la hora
             let saludo = '¡Buenas noches';
             if (horas >= 6 && horas < 12) {
                 saludo = '¡Buenos días';
@@ -154,21 +179,18 @@
                 saludo = '¡Buenas tardes';
             }
 
-            const nombreUsuario = "<?php echo explode(' ', trim($_SESSION['nombres']))[0]; ?>"; // Saca solo el primer nombre
+            const nombreUsuario = "<?php echo explode(' ', trim($_SESSION['nombres']))[0]; ?>";
             document.getElementById('saludo-dinamico').innerHTML = `${saludo}, ${nombreUsuario}! 👋`;
             
-            // Formatear Fecha
             const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const fechaTxt = ahora.toLocaleDateString('es-PE', opcionesFecha);
             
-            // Mostrar info (Agregamos la ubicación operativa)
-            document.getElementById('reloj-digital').innerHTML = `📍 Sede Pisco, Ica | 📅 ${fechaTxt.charAt(0).toUpperCase() + fechaTxt.slice(1)} | ⏰ ${horas}:${minutos}:${segundos}`;
+            document.getElementById('reloj-digital').innerHTML = `📅 ${fechaTxt.charAt(0).toUpperCase() + fechaTxt.slice(1)} | ⏰ ${horas}:${minutos}:${segundos}`;
         }
         
         setInterval(actualizarReloj, 1000);
-        actualizarReloj(); // Ejecutar de inmediato
+        actualizarReloj();
 
-        // 2. Alertas Globales del Sistema
         function lanzarAlerta(tipo, titulo, mensaje) {
             Swal.fire({
                 icon: tipo,
