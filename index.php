@@ -2,8 +2,8 @@
 // 1. Arrancamos la sesión de PHP (obligatorio para logueos)
 session_start();
 
-// --- 🛡️ MEJORA 1: CIERRE POR INACTIVIDAD (30 MINUTOS) ---
-$tiempo_limite_inactividad = 1800; // 1800 segundos = 30 minutos
+// --- 🛡️ MEJORA 1: CIERRE POR INACTIVIDAD SEGURA (1 MINUTO) ---
+$tiempo_limite_inactividad = 60; // 60 segundos = 1 minuto exacto
 
 // 2. Si el usuario ya está logueado, verificamos su actividad y qué acción quiere hacer
 if (isset($_SESSION['usuario_id'])) {
@@ -152,7 +152,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Guardamos sus datos en la sesión
         $_SESSION['usuario_id'] = $usuario['id_usuario'];
         $_SESSION['nombres'] = $usuario['nombres'];
-        $_SESSION['id_rol'] = $usuario['id_rol'];
+        $_SESSION['id_rol'] = $usuario['id_usuario_rol'] ?? $usuario['id_rol']; // Mantiene tu mapeo de roles
         $_SESSION['ultimo_acceso'] = time(); // Iniciamos el reloj de inactividad
         
         // Recargamos la página para que entre
