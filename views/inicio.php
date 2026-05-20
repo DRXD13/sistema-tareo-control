@@ -22,7 +22,7 @@ $cuadrillasActivas = count(array_filter($listaCuadrillas, function($c) { return 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h3 class="text-primary m-0 fw-bold">📊 Panel de Control Analítico</h3>
-            <p class="text-muted small m-0">Resumen operativo del Sistema de Tareo - Municipalidad Distrital Túpac Amaru Inca.</p>
+            <p class="text-muted small m-0">Resumen operativo del Sistema de Tareo.</p>
         </div>
         <div class="text-end">
             <span class="text-secondary fw-bold">Fecha:</span> 
