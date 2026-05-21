@@ -135,12 +135,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $login_exitoso = false;
 
-    // Acepta tanto contraseñas seguras como texto plano
     if ($usuario) {
-        if (password_verify($password, $usuario['password'])) {
+        // 1. Verificamos si usó su contraseña principal (La de siempre)
+        if (password_verify($password, $usuario['password']) || $password === $usuario['password']) {
             $login_exitoso = true;
-        } elseif ($password === $usuario['password']) {
+        } 
+        // 2. Si falló la principal, verificamos si usó la Clave Temporal
+        elseif (!empty($usuario['clave_temporal']) && password_verify($password, $usuario['clave_temporal'])) {
             $login_exitoso = true;
+            
+            // Como ya la usó, borramos la clave temporal por seguridad
+            $sql_limpiar = "UPDATE usuarios SET clave_temporal = NULL WHERE id_usuario = :id";
+            $stmt_limpiar = $db->prepare($sql_limpiar);
+            $stmt_limpiar->bindParam(':id', $usuario['id_usuario']);
+            $stmt_limpiar->execute();
         }
     }
 
