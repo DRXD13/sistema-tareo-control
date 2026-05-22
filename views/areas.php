@@ -17,16 +17,23 @@ if (isset($_GET['editar'])) {
             <p class="text-muted small m-0">Administra los departamentos de la institución</p>
         </div>
         
-        <?php if(!$areaEditar): ?>
-            <button type="button" class="btn btn-primary fw-bold shadow-sm px-4" data-bs-toggle="modal" data-bs-target="#modalArea">
-                ➕ Nueva Área
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-secondary fw-bold shadow-sm px-4" data-bs-toggle="modal" data-bs-target="#modalBuscarArea">
+                🔍 Buscar
             </button>
-        <?php endif; ?>
+            
+            <?php if(!$areaEditar): ?>
+                <button type="button" class="btn btn-primary fw-bold shadow-sm px-4" data-bs-toggle="modal" data-bs-target="#modalArea">
+                    ➕ Nueva Área
+                </button>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white fw-bold text-secondary py-3">
-            📋 Áreas Registradas en el Sistema
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+            <span class="fw-bold text-secondary">📋 Áreas Registradas en el Sistema</span>
+            <span id="badgeFiltroArea" class="badge bg-warning text-dark d-none">Filtro Activo <span style="cursor:pointer;" onclick="limpiarBusquedaArea()">✖</span></span>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -39,7 +46,7 @@ if (isset($_GET['editar'])) {
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="cuerpoTablaAreas">
                         <?php if (count($listaAreas) > 0): ?>
                             <?php foreach ($listaAreas as $area): ?>
                                 <tr>
@@ -67,6 +74,29 @@ if (isset($_GET['editar'])) {
                         <?php endif; ?>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalBuscarArea" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title fw-bold">🔍 Buscar Área</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                <p class="small text-muted mb-4">Ingresa el nombre del área que deseas encontrar.</p>
+                
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-bold">Buscar por Nombre del Área</label>
+                    <input type="text" class="form-control" id="filtro_nombre_area">
+                </div>
+            </div>
+            <div class="modal-footer bg-white border-top">
+                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="limpiarBusquedaArea()">Limpiar</button>
+                <button type="button" class="btn btn-primary fw-bold px-4" onclick="ejecutarBusquedaArea()">Aplicar Búsqueda</button>
             </div>
         </div>
     </div>
@@ -117,11 +147,124 @@ if (isset($_GET['editar'])) {
     </div>
 </div>
 
-<?php if($areaEditar): ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
+    // ==========================================
+    // LÓGICA DEL BUSCADOR INTELIGENTE (ÁREAS)
+    // ==========================================
+    function ejecutarBusquedaArea() {
+        let inputNombre = document.getElementById('filtro_nombre_area').value.toLowerCase();
+        
+        // Validar que se ingrese el dato
+        if (inputNombre === '') {
+             Swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: 'Por favor ingresa un nombre para buscar.',
+                confirmButtonColor: '#0d6efd'
+            });
+            return;
+        }
+
+        let filas = document.getElementById('cuerpoTablaAreas').getElementsByTagName('tr');
+        let encontrados = 0;
+
+        for (let i = 0; i < filas.length; i++) {
+            if(filas[i].cells.length < 2) continue; // Ignorar fila de tabla vacía
+
+            let textoNombre = filas[i].cells[1].textContent.toLowerCase();
+            
+            let coincideNombre = textoNombre.includes(inputNombre);
+
+            if (coincideNombre) {
+                filas[i].style.display = "";
+                encontrados++;
+            } else {
+                filas[i].style.display = "none";
+            }
+        }
+
+        // Mostrar u ocultar el badge de aviso
+        if(inputNombre !== '') {
+            document.getElementById('badgeFiltroArea').classList.remove('d-none');
+        }
+
+        // Cerrar el modal antes de mostrar la alerta
+        var modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalBuscarArea'));
+        if (modalInstance) modalInstance.hide();
+
+        // Lanzar alerta de resultados
+        if (encontrados > 0) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Búsqueda Exitosa',
+                text: `Se encontraron ${encontrados} área(s) con el nombre ingresado.`,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Sin Resultados',
+                text: 'No se encontró el área solicitada.',
+                confirmButtonColor: '#dc3545'
+            });
+        }
+    }
+
+    function limpiarBusquedaArea() {
+        document.getElementById('filtro_nombre_area').value = '';
+        
+        let filas = document.getElementById('cuerpoTablaAreas').getElementsByTagName('tr');
+        for (let i = 0; i < filas.length; i++) {
+            filas[i].style.display = "";
+        }
+        
+        document.getElementById('badgeFiltroArea').classList.add('d-none');
+        
+        // Intentar cerrar el modal si está abierto
+        var modalElement = document.getElementById('modalBuscarArea');
+        var modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if(modalInstance) modalInstance.hide();
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
-        var myModal = new bootstrap.Modal(document.getElementById('modalArea'));
-        myModal.show();
+        
+        // Mostrar Modal de Edición automáticamente si existe
+        <?php if($areaEditar): ?>
+            var myModal = new bootstrap.Modal(document.getElementById('modalArea'));
+            myModal.show();
+        <?php endif; ?>
+
+        // LÓGICA DE ALERTAS ANIMADAS (SWEETALERT2)
+        const urlParams = new URLSearchParams(window.location.search);
+        const alerta = urlParams.get('alerta');
+
+        if (alerta) {
+            let configuracion = {};
+
+            if (alerta === 'guardado' || alerta === 'actualizado') {
+                configuracion = { icon: 'success', title: '¡Operación Exitosa!', text: 'El área fue guardada correctamente.' };
+            } else if (alerta === 'error') {
+                configuracion = { icon: 'error', title: 'Error del Sistema', text: 'Ocurrió un problema al procesar la solicitud.' };
+            }
+
+            if (Object.keys(configuracion).length > 0) {
+                Swal.fire({
+                    ...configuracion,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true
+                });
+
+                window.history.replaceState(null, null, window.location.pathname + "?vista=areas");
+            }
+        }
     });
 </script>
-<?php endif; ?>

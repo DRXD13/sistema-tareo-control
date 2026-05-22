@@ -29,16 +29,23 @@ if (isset($_GET['editar'])) {
             <p class="text-muted small m-0">Administra a todos los trabajadores de la empresa</p>
         </div>
         
-        <?php if(!$trabajadorEditar): ?>
-            <button type="button" class="btn btn-primary fw-bold shadow-sm px-4" data-bs-toggle="modal" data-bs-target="#modalTrabajador">
-                ➕ Nuevo Trabajador
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-secondary fw-bold shadow-sm px-4" data-bs-toggle="modal" data-bs-target="#modalBuscarTrabajador">
+                🔍 Buscar
             </button>
-        <?php endif; ?>
+            
+            <?php if(!$trabajadorEditar): ?>
+                <button type="button" class="btn btn-primary fw-bold shadow-sm px-4" data-bs-toggle="modal" data-bs-target="#modalTrabajador">
+                    ➕ Nuevo Trabajador
+                </button>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white fw-bold text-secondary py-3">
-            📋 Personal Registrado
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+            <span class="fw-bold text-secondary">📋 Personal Registrado</span>
+            <span id="badgeFiltro" class="badge bg-warning text-dark d-none">Filtro Activo <span style="cursor:pointer;" onclick="limpiarBusqueda()">✖</span></span>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -53,7 +60,7 @@ if (isset($_GET['editar'])) {
                             <th>Acciones</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="cuerpoTablaTrabajadores">
                         <?php if (count($listaTrabajadores) > 0): ?>
                             <?php foreach ($listaTrabajadores as $t): ?>
                                 <tr>
@@ -86,6 +93,34 @@ if (isset($_GET['editar'])) {
                         <?php endif; ?>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalBuscarTrabajador" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title fw-bold">🔍 Buscar Personal</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                <p class="small text-muted mb-4">Ingresa los datos del trabajador que deseas encontrar. Puedes usar uno o varios campos.</p>
+                
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-bold">Buscar por Documento (DNI/CE)</label>
+                    <input type="text" class="form-control" id="filtro_dni">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-bold">Buscar por Nombres</label>
+                    <input type="text" class="form-control" id="filtro_nombres">
+                </div>
+            </div>
+            <div class="modal-footer bg-white border-top">
+                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="limpiarBusqueda()">Limpiar</button>
+                <button type="button" class="btn btn-primary fw-bold px-4" onclick="ejecutarBusqueda()">Aplicar Búsqueda</button>
             </div>
         </div>
     </div>
@@ -211,15 +246,102 @@ if (isset($_GET['editar'])) {
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+    // ==========================================
+    // LÓGICA DEL BUSCADOR INTELIGENTE (MODAL)
+    // ==========================================
+    function ejecutarBusqueda() {
+        let inputDni = document.getElementById('filtro_dni').value.toLowerCase();
+        let inputNombres = document.getElementById('filtro_nombres').value.toLowerCase();
+        
+        // Validar que al menos se ingrese un dato
+        if (inputDni === '' && inputNombres === '') {
+             Swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: 'Por favor ingresa al menos un dato para buscar.',
+                confirmButtonColor: '#0d6efd'
+            });
+            return; // No ejecutar búsqueda
+        }
+
+        let filas = document.getElementById('cuerpoTablaTrabajadores').getElementsByTagName('tr');
+        let encontrados = 0;
+
+        for (let i = 0; i < filas.length; i++) {
+            if(filas[i].cells.length < 2) continue;
+
+            let textoDni = filas[i].cells[0].textContent.toLowerCase();
+            let textoNombreCompleto = filas[i].cells[1].textContent.toLowerCase();
+            
+            let coincideDni = inputDni === '' || textoDni.includes(inputDni);
+            let coincideNombre = inputNombres === '' || textoNombreCompleto.includes(inputNombres);
+
+            if (coincideDni && coincideNombre) {
+                filas[i].style.display = "";
+                encontrados++;
+            } else {
+                filas[i].style.display = "none";
+            }
+        }
+
+        // Mostrar u ocultar el badge de aviso
+        if(inputDni !== '' || inputNombres !== '') {
+            document.getElementById('badgeFiltro').classList.remove('d-none');
+        }
+
+        // Cerrar el modal antes de mostrar la alerta
+        var modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalBuscarTrabajador'));
+        modalInstance.hide();
+
+        // Lanzar alerta de resultados (Éxito o Error)
+        if (encontrados > 0) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Búsqueda Exitosa',
+                text: `Se encontraron ${encontrados} trabajador(es) con los datos ingresados.`,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Sin Resultados',
+                text: 'No se encontró a la persona solicitada.',
+                confirmButtonColor: '#dc3545'
+            });
+            // Opcional: Podrías llamar a limpiarBusqueda() aquí si quieres que la tabla vuelva a mostrarse completa tras un fallo.
+        }
+    }
+
+    function limpiarBusqueda() {
+        document.getElementById('filtro_dni').value = '';
+        document.getElementById('filtro_nombres').value = '';
+        
+        let filas = document.getElementById('cuerpoTablaTrabajadores').getElementsByTagName('tr');
+        for (let i = 0; i < filas.length; i++) {
+            filas[i].style.display = "";
+        }
+        
+        document.getElementById('badgeFiltro').classList.add('d-none');
+        
+        // Intentar cerrar el modal si está abierto
+        var modalElement = document.getElementById('modalBuscarTrabajador');
+        var modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if(modalInstance) modalInstance.hide();
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
         
-        // 1. Mostrar Modal de Edición automáticamente si existe
+        // Mostrar Modal de Edición automáticamente si existe
         <?php if($trabajadorEditar): ?>
             var myModal = new bootstrap.Modal(document.getElementById('modalTrabajador'));
             myModal.show();
         <?php endif; ?>
 
-        // 2. LÓGICA DE BLOQUEO DE TECLADO PARA EL DNI/CE
+        // LÓGICA DE BLOQUEO DE TECLADO PARA EL DNI/CE
         const selectDoc = document.getElementById('tipo_documento');
         const inputNum = document.getElementById('numero_documento');
 
@@ -249,7 +371,7 @@ if (isset($_GET['editar'])) {
             });
         }
 
-        // 3. LÓGICA DE ALERTAS ANIMADAS (SWEETALERT2)
+        // LÓGICA DE ALERTAS ANIMADAS (SWEETALERT2)
         const urlParams = new URLSearchParams(window.location.search);
         const alerta = urlParams.get('alerta');
 
@@ -276,7 +398,6 @@ if (isset($_GET['editar'])) {
                     timerProgressBar: true
                 });
 
-                // Limpiar la URL para evitar alertas duplicadas
                 window.history.replaceState(null, null, window.location.pathname + "?vista=trabajadores");
             }
         }
