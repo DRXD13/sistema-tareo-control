@@ -22,6 +22,10 @@ foreach ($listaAsistencias as $a) {
             <h3 class="text-primary m-0 fw-bold">⏱️ Control de Asistencias y Permisos</h3>
             <p class="text-muted small m-0">Registra el ingreso, salida o justificación del personal activo.</p>
         </div>
+        
+        <button type="button" class="btn btn-secondary fw-bold shadow-sm px-4" data-bs-toggle="modal" data-bs-target="#modalBuscarAsistencia">
+            🔍 Buscar Personal
+        </button>
     </div>
 
     <div class="card border-0 shadow-sm mb-4">
@@ -41,7 +45,11 @@ foreach ($listaAsistencias as $a) {
     <div class="card border-0 shadow-sm">
         <div class="card-header bg-white fw-bold text-secondary py-3 d-flex justify-content-between align-items-center">
             <span>👥 Personal Activo - <?php echo date('d/m/Y', strtotime($fecha_seleccionada)); ?></span>
-            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary">Regla de Negocio RN04 Activa</span>
+            
+            <div class="d-flex gap-2 align-items-center">
+                <span id="badgeFiltroAsistencia" class="badge bg-warning text-dark d-none">Filtro Activo <span style="cursor:pointer;" onclick="limpiarBusquedaAsistencia()">✖</span></span>
+                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary">Regla de Negocio RN04 Activa</span>
+            </div>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -54,7 +62,7 @@ foreach ($listaAsistencias as $a) {
                             <th>Acción Requerida</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="cuerpoTablaAsistencias">
                         <?php 
                         $hayActivos = false;
                         foreach ($listaTrabajadores as $t): 
@@ -143,3 +151,113 @@ foreach ($listaAsistencias as $a) {
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalBuscarAsistencia" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title fw-bold">🔍 Buscar Trabajador</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                <p class="small text-muted mb-4">Ingresa el nombre o apellido del trabajador que deseas encontrar en la lista de hoy.</p>
+                
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-bold">Buscar por Nombres o Apellidos</label>
+                    <input type="text" class="form-control" id="filtro_nombre_trabajador">
+                </div>
+            </div>
+            <div class="modal-footer bg-white border-top">
+                <button type="button" class="btn btn-outline-secondary fw-bold" onclick="limpiarBusquedaAsistencia()">Limpiar</button>
+                <button type="button" class="btn btn-primary fw-bold px-4" onclick="ejecutarBusquedaAsistencia()">Aplicar Búsqueda</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // ==========================================
+    // LÓGICA DEL BUSCADOR INTELIGENTE (ASISTENCIAS)
+    // ==========================================
+    function ejecutarBusquedaAsistencia() {
+        let inputNombre = document.getElementById('filtro_nombre_trabajador').value.toLowerCase();
+        
+        // Validar que se ingrese el dato
+        if (inputNombre === '') {
+             Swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: 'Por favor ingresa un nombre para buscar.',
+                confirmButtonColor: '#0d6efd'
+            });
+            return;
+        }
+
+        let filas = document.getElementById('cuerpoTablaAsistencias').getElementsByTagName('tr');
+        let encontrados = 0;
+
+        for (let i = 0; i < filas.length; i++) {
+            if(filas[i].cells.length < 2) continue; // Ignorar fila de tabla vacía
+
+            // En la tabla de Asistencias, el nombre del trabajador está dentro de un span en la primera celda
+            let textoNombre = filas[i].cells[0].querySelector('span.fw-bold').textContent.toLowerCase();
+            
+            let coincideNombre = textoNombre.includes(inputNombre);
+
+            if (coincideNombre) {
+                filas[i].style.display = "";
+                encontrados++;
+            } else {
+                filas[i].style.display = "none";
+            }
+        }
+
+        // Mostrar u ocultar el badge de aviso
+        if(inputNombre !== '') {
+            document.getElementById('badgeFiltroAsistencia').classList.remove('d-none');
+        }
+
+        // Cerrar el modal antes de mostrar la alerta
+        var modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalBuscarAsistencia'));
+        if (modalInstance) modalInstance.hide();
+
+        // Lanzar alerta de resultados
+        if (encontrados > 0) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Búsqueda Exitosa',
+                text: `Se encontraron ${encontrados} trabajador(es) con el nombre ingresado.`,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Sin Resultados',
+                text: 'No se encontró al trabajador solicitado.',
+                confirmButtonColor: '#dc3545'
+            });
+        }
+    }
+
+    function limpiarBusquedaAsistencia() {
+        document.getElementById('filtro_nombre_trabajador').value = '';
+        
+        let filas = document.getElementById('cuerpoTablaAsistencias').getElementsByTagName('tr');
+        for (let i = 0; i < filas.length; i++) {
+            filas[i].style.display = "";
+        }
+        
+        document.getElementById('badgeFiltroAsistencia').classList.add('d-none');
+        
+        // Intentar cerrar el modal si está abierto
+        var modalElement = document.getElementById('modalBuscarAsistencia');
+        var modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if(modalInstance) modalInstance.hide();
+    }
+</script>
