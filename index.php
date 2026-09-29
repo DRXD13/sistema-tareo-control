@@ -2,8 +2,8 @@
 // 1. Arrancamos la sesión de PHP (obligatorio para logueos)
 session_start();
 
-// --- 🛡️ MEJORA 1: CIERRE POR INACTIVIDAD SEGURA (1 MINUTO) ---
-$tiempo_limite_inactividad = 60; // 60 segundos = 1 minuto exacto
+// --- 🛡️ MEJORA 1: CIERRE POR INACTIVIDAD SEGURA (30 MINUTOS) ---
+$tiempo_limite_inactividad = 1800; // 1800 segundos = 30 minutos
 
 // 2. Si el usuario ya está logueado, verificamos su actividad y qué acción quiere hacer
 if (isset($_SESSION['usuario_id'])) {
